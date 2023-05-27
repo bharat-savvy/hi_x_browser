@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:nothing_browser/dashboard.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:toastification/toastification.dart';
 
 class DuckPage extends StatefulWidget {
   const DuckPage({Key? key}) : super(key: key);
@@ -41,9 +44,35 @@ class _DuckPageState extends State<DuckPage> {
             });
   }
 
+
+
+  void _onPressed(BuildContext context) async {
+    //store the navigator instance in a local variable
+    final navigator = Navigator.of(context);
+    //show confirmation dialog
+    DefaultCacheManager().emptyCache();
+    //use the navigator variable instead of context for navigation
+    navigator.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const DashboardPage()),
+          (route) => false,
+    );
+    toastification.show(
+      context: context,
+      title: 'Everything Cleared',
+      autoCloseDuration: const Duration(seconds: 3),
+      icon: const Icon(Icons.check),
+      backgroundColor: Colors.blueGrey,
+      foregroundColor: Colors.white,
+    );
+
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
+
+      //Backpress Starts
       onWillPop: () async {
         if (await webViewController!.canGoBack()) {
           webViewController!.goBack();
@@ -52,6 +81,7 @@ class _DuckPageState extends State<DuckPage> {
           return true;
         }
       },
+      //Backpress Ends
 
 
       child: Scaffold(
@@ -60,19 +90,24 @@ class _DuckPageState extends State<DuckPage> {
           children: [
             TextField(
               decoration: InputDecoration(
+
+                //Search Bar Prefix Icon
                   prefixIcon: IconButton(
                     icon: const Icon(Icons.home),
                    onPressed: () {
                       Navigator.pushNamed(context, '/duckduck');
                    } ,),
 
+
+                  //Search Bar Suffix icon
                    suffixIcon: IconButton(
-                     icon: const Icon(Icons.dashboard),
-                     onPressed: () {
-                          Navigator.pushNamed(context, '/');
-                     } ,),
+                     icon: const Icon(Icons.cleaning_services),
+                     onPressed: ()=> _onPressed(context),
+                     ),
 
               ),
+
+              //Search Bar Text Field Starts Here
               textAlign: TextAlign.center,
               controller: urlController,
               keyboardType: TextInputType.url,
@@ -84,6 +119,11 @@ class _DuckPageState extends State<DuckPage> {
                 webViewController?.loadUrl(urlRequest: URLRequest(url: url));
               },
             ),
+
+            //Search Bar Text Field End Here
+
+
+            //Body Starts Here
             Expanded(
                 child: Stack(
               children: [
@@ -161,6 +201,7 @@ class _DuckPageState extends State<DuckPage> {
                     : Container(),
               ],
             ))
+            //Body Ends Here
           ],
         )),
       ),
