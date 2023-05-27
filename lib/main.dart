@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nothing_browser/dashboard.dart';
+import 'package:nothing_browser/pages/duck.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,6 +24,8 @@ class MyApp extends StatelessWidget {
 
       routes: {
         '/': (context) => const DashboardPage(),
+        '/duckduck': (context) => const DuckPage(),
+
       },
 
 

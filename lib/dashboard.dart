@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 
 
+
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
@@ -10,10 +11,26 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  // define a list of image paths
+  List<String> images = [
+    'assets/images/duck.png',
+    'assets/images/google.png',
+    'assets/images/bing.png',
+    'assets/images/yahoo.png',
+    'assets/images/yandex.png',
+    'assets/images/LogoFinal.png',
+
+  ];
 
 
-
+  // define a list of page names
+  List<String> pageNames = [
+    '/duckduck',
+    '/profile',
+    '/settings',
+    '/about',
+    '/contact',
+    '/help',
+  ];
 
 
   @override
@@ -58,7 +75,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
               //Logo Bottom Space
               const SizedBox(
-                height: 40,
+                height: 70,
               ),
               //Logo Bottom Space ends here
 
@@ -74,8 +91,45 @@ class _DashboardPageState extends State<DashboardPage> {
 
 
               //Select Engine Text End Here
-              //Search Engine Items Starts Here
 
+              const SizedBox(
+                height: 10,
+              ),
+
+
+              //Search Engine Items Starts Here
+              Container(
+
+                margin: const EdgeInsets.all(25),
+                 height: 200,
+                 color: Colors.transparent,
+
+                child: GridView.count(
+                  crossAxisCount: 5, // number of items per row
+                  crossAxisSpacing: 20, // horizontal spacing between the items
+                  mainAxisSpacing: 20, // vertical spacing between the items
+                  children: List.generate(images.length, (index) {
+                    return InkWell(
+                      onTap: () {
+                        // handle click event by navigating to the page
+                        String pageName = pageNames[index];
+                        Navigator.pushNamed(context, pageName);
+                      },
+                      child: Image.asset(
+                        images[index],
+                        fit: BoxFit.cover,// load image from asset folder using the lis// make the image cover the available space
+                      ),
+                    );
+                  }),
+                ),
+
+
+
+
+
+
+
+              )
 
 
 
