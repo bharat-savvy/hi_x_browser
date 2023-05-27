@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'dashboard.dart';
+import 'package:nothing_browser/dashboard.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +19,13 @@ class MyApp extends StatelessWidget {
       ),
       themeMode: ThemeMode.dark,
 
-      home: const DashboardPage(),
+      initialRoute: '/',
+
+      routes: {
+        '/': (context) => const DashboardPage(),
+      },
+
+
     );
   }
 }
