@@ -17,7 +17,11 @@ class _DashboardPageState extends State<DashboardPage> {
     'assets/images/bing.png',
     'assets/images/yahoo.png',
     'assets/images/yandex.png',
-    'assets/images/LogoFinal.png',
+    'assets/images/start.png',
+    'assets/images/ask.png',
+    'assets/images/ecosia.png',
+    'assets/images/wolfarm.png',
+    'assets/images/aol.png',
 
   ];
 
@@ -25,11 +29,16 @@ class _DashboardPageState extends State<DashboardPage> {
   // define a list of page names
   List<String> pageNames = [
     '/duckduck',
-    '/profile',
-    '/settings',
-    '/about',
-    '/contact',
-    '/help',
+    '/googled',
+    '/bingd',
+    '/yahood',
+    '/yandexd',
+    '/startd',
+    '/askd',
+    '/ecosiad',
+    '/wolfarmd',
+    '/aold',
+
   ];
 
 
