@@ -11,6 +11,8 @@ import 'package:nothing_browser/pages/wolfarm.dart';
 import 'package:nothing_browser/pages/yahoo.dart';
 import 'package:nothing_browser/pages/yandex.dart';
 
+
+
 void main() {
   runApp(const MyApp());
 }
@@ -27,6 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Nothing Browser',
       theme: ThemeData(
         brightness: Brightness.light,
