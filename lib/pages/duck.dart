@@ -23,7 +23,11 @@ class _DuckPageState extends State<DuckPage> {
       mediaPlaybackRequiresUserGesture: false,
       allowsInlineMediaPlayback: true,
       iframeAllow: "camera; microphone",
-      iframeAllowFullscreen: true);
+      iframeAllowFullscreen: true,
+      useOnDownloadStart: true
+
+  );
+
 
   PullToRefreshController? pullToRefreshController;
   String url = "";
@@ -88,36 +92,49 @@ class _DuckPageState extends State<DuckPage> {
         body: SafeArea(
             child: Column(
           children: [
-            TextField(
-              decoration: InputDecoration(
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [
+                      Colors.red,
+                      Colors.black87
+                    ]
 
-                //Search Bar Prefix Icon
-                  prefixIcon: IconButton(
-                    icon: const Icon(Icons.home),
-                   onPressed: () {
-                      Navigator.pushNamed(context, '/duckduck');
-                   } ,),
-
-
-                  //Search Bar Suffix icon
-                   suffixIcon: IconButton(
-                     icon: const Icon(Icons.cleaning_services),
-                     onPressed: ()=> _onPressed(context),
-                     ),
-
+                )
               ),
+              child: TextField(
+                decoration: InputDecoration(
 
-              //Search Bar Text Field Starts Here
-              textAlign: TextAlign.center,
-              controller: urlController,
-              keyboardType: TextInputType.url,
-              onSubmitted: (value) {
-                var url = WebUri(value);
-                if (url.scheme.isEmpty) {
-                  url = WebUri("https://duckduckgo.com/?q=$value");
-                }
-                webViewController?.loadUrl(urlRequest: URLRequest(url: url));
-              },
+                  //Search Bar Prefix Icon
+                    prefixIcon: IconButton(
+                      icon: const Icon(Icons.home),
+                     onPressed: () {
+                        Navigator.pushNamed(context, '/duckduck');
+                     } ,),
+
+
+                    //Search Bar Suffix icon
+                     suffixIcon: IconButton(
+                       icon: const Icon(Icons.cleaning_services),
+                       onPressed: ()=> _onPressed(context),
+                       ),
+
+                ),
+
+                //Search Bar Text Field Starts Here
+                textAlign: TextAlign.center,
+                controller: urlController,
+                keyboardType: TextInputType.url,
+                onSubmitted: (value) {
+                  var url = WebUri(value);
+                  if (url.scheme.isEmpty) {
+                    url = WebUri("https://duckduckgo.com/?q=$value");
+                  }
+                  webViewController?.loadUrl(urlRequest: URLRequest(url: url));
+                },
+              ),
             ),
 
             //Search Bar Text Field End Here
@@ -142,6 +159,7 @@ class _DuckPageState extends State<DuckPage> {
                       urlController.text = this.url;
                     });
                   },
+
                   onPermissionRequest: (controller, request) async {
                     return PermissionResponse(
                         resources: request.resources,
