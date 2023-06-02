@@ -29,6 +29,17 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Image.asset('assets/images/LogoFinal.png',
+        width: 40,
+
+        ),
+      ),
+      
+      
+      
+      
       body: SafeArea(
         child: Center(
           child: Container(
@@ -41,9 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //This is top Height
-                const SizedBox(
-                  height: 110,
-                ),
+                
                 //Top Height Ends Here
 
                 //This is main Logo
@@ -61,11 +70,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ],
                   ),
-                  child: Image.asset(
-                    'assets/images/LogoFinal.png',
-                    width: 50,
-                    height: 50,
-                  ),
+
                 ),
                 //Logo Container Ends Here
 
