@@ -9,6 +9,9 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+
+
+  //List of Images
   List<String> images = [
     'assets/images/duck.png',
     'assets/images/google.png',
@@ -20,58 +23,28 @@ class _DashboardPageState extends State<DashboardPage> {
     'assets/images/ecosia.png',
     'assets/images/wolfarm.png',
     'assets/images/aol.png',
-
-  ];
-
-
-
-  // define a list of page names
-  List<String> pageNames = [
-    '/duckduck',
-    '/googled',
-    '/bingd',
-    '/yahood',
-    '/yandexd',
-    '/startd',
-    '/askd',
-    '/ecosiad',
-    '/wolfarmd',
-    '/aold',
-
   ];
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: SafeArea(
         child: Center(
           child: Container(
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                  colors: [
-                    Colors.blueGrey,
-                    Colors.black87
-                  ]
-              )
-            ),
-
-
-
+                gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [Colors.blueGrey, Colors.black87])),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-
-
                 //This is top Height
                 const SizedBox(
                   height: 110,
                 ),
                 //Top Height Ends Here
-
 
                 //This is main Logo
                 Container(
@@ -88,10 +61,10 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ],
                   ),
-                  child: Image.asset('assets/images/LogoFinal.png',
-                  width: 50,
-                  height: 50,
-
+                  child: Image.asset(
+                    'assets/images/LogoFinal.png',
+                    width: 50,
+                    height: 50,
                   ),
                 ),
                 //Logo Container Ends Here
@@ -102,16 +75,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 //Logo Bottom Space ends here
 
-
                 //Select Engine Text Starts here
-                const Text('SELECT ENGINE',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14
+                const Text(
+                  'SELECT ENGINE',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                 ),
-                ),
-
-
 
                 //Select Engine Text End Here
 
@@ -119,56 +87,45 @@ class _DashboardPageState extends State<DashboardPage> {
                   height: 10,
                 ),
 
-
                 //Search Engine Items Starts Here
                 Container(
-
                   margin: const EdgeInsets.all(25),
-                   height: 200,
-                   color: Colors.transparent,
-
+                  height: 200,
+                  color: Colors.transparent,
                   child: GridView.count(
                     crossAxisCount: 5, // number of items per row
-                    crossAxisSpacing: 20, // horizontal spacing between the items
+                    crossAxisSpacing:
+                        20, // horizontal spacing between the items
                     mainAxisSpacing: 20, // vertical spacing between the items
                     children: List.generate(images.length, (index) {
                       return InkWell(
                         onTap: () {
                           // handle click event by navigating to the page
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                              builder: (context) => InAppWebViewPage(index: index),
-                          ),
-                          );},
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  InAppWebViewPage(index: index),
+                            ),
+                          );
+                        },
+
+
+                        //Images Starts Here
                         child: Image.asset(
                           images[index],
-                          fit: BoxFit.cover,// load image from asset folder using the lis// make the image cover the available space
+                          fit: BoxFit
+                              .cover, // load image from asset folder using the lis// make the image cover the available space
                         ),
                       );
                     }),
                   ),
-
-
-
-
-
-
-
                 )
-
-
-
-
-
-
               ],
             ),
           ),
         ),
       ),
-
-
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           boxShadow: [
@@ -184,20 +141,13 @@ class _DashboardPageState extends State<DashboardPage> {
         height: 50,
         child: const BottomAppBar(
           elevation: 50,
-          child: Center(child: Text('Nothing Browser',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500
-          ),
-
+          child: Center(
+              child: Text(
+            'Nothing Browser',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           )),
         ),
       ),
-
-
-
-
-
     );
   }
 }

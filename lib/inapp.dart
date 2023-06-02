@@ -32,7 +32,7 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
 
   );
 
-
+  //Refresh Page Circuler Progress bar
   PullToRefreshController? pullToRefreshController;
   String url = "";
   double progress = 0;
@@ -66,6 +66,8 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
       MaterialPageRoute(builder: (context) => const DashboardPage()),
           (route) => false,
     );
+
+    //ToastNotification Files
     toastification.show(
       context: context,
       title: 'Everything Cleared',
@@ -74,6 +76,8 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
       backgroundColor: Colors.blueGrey,
       foregroundColor: Colors.white,
     );
+
+    //ToastNotification Ends Here
 
 
   }
@@ -94,6 +98,9 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
     'https://search.aol.com/',
   ];
 
+
+
+  //A List of Webpages 2 for top search bar
   final List<String> webpages1 = [
     "https://duckduckgo.com/?q",
     "https://www.google.com/search?q",
@@ -134,6 +141,7 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
           return true;
         }
       },
+
       //Backpress Ends
 
 
