@@ -144,13 +144,21 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
         height: 50,
-        child: const BottomAppBar(
+        child: BottomAppBar(
           elevation: 50,
           child: Center(
-              child: Text(
-            'Nothing Browser',
+              child: InkWell(
+                child: const Text(
+            'Explore More...',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          )),
+          ),
+          onTap: (){
+
+          },
+
+          )
+
+          ),
         ),
       ),
     );
