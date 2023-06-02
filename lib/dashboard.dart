@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nothing_browser/inapp.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -67,7 +68,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 //This is top Height
                 const SizedBox(
-                  height: 150,
+                  height: 110,
                 ),
                 //Top Height Ends Here
 
@@ -134,9 +135,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       return InkWell(
                         onTap: () {
                           // handle click event by navigating to the page
-                          String pageName = pageNames[index];
-                          Navigator.pushNamed(context, pageName);
-                        },
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                              builder: (context) => InAppWebViewPage(index: index),
+                          ),
+                          );},
                         child: Image.asset(
                           images[index],
                           fit: BoxFit.cover,// load image from asset folder using the lis// make the image cover the available space

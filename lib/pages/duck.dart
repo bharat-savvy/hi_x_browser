@@ -89,6 +89,11 @@ class _DuckPageState extends State<DuckPage> {
 
 
       child: Scaffold(
+        
+        
+        
+        
+        
         body: SafeArea(
             child: Column(
           children: [
