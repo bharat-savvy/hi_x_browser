@@ -48,7 +48,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 gradient: LinearGradient(
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
-                    colors: [Colors.blueGrey, Colors.black87])),
+                    colors: [
+                      Colors.black,
+                      Colors.black54
+                    ]
+                )
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [

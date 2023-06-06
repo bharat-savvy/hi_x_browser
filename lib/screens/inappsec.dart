@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:nothing_browser/dashboard.dart';
+import 'package:nothing_browser/screens/downloads.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
@@ -141,7 +142,13 @@ class _DashedPageState extends State<DashedPage> {
                   //Search Bar Prefix Icon
                   prefixIcon: IconButton(
                     icon: const Icon(Icons.add_box_outlined),
-                    onPressed: () {},
+                    onPressed: () {
+                      // push the download screen using a navigator widget
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DownloadScreen()),
+                      );
+                    },
                   ),
 
                   //Search Bar Suffix icon
@@ -316,6 +323,8 @@ class _DashedPageState extends State<DashedPage> {
                     });
                   },
                   // add the onDownloadStart event handler with permission check and download task enqueueing
+                  // add the onDownloadStartRequest event handler with permission check and download task enqueueing
+                  // add the onDownloadStartRequest event handler with permission check and download task enqueueing
                   onDownloadStartRequest: (controller, downloadUrl) async {
                     print("onDownloadStart $downloadUrl");
 
@@ -325,26 +334,31 @@ class _DashedPageState extends State<DashedPage> {
                       status = await Permission.storage.request();
                     }
                     if (status.isGranted) {
-                      final dir = await getApplicationDocumentsDirectory();
+                      final dir = await getExternalStorageDirectory();
                       var _localPath =
-                          dir.path + Platform.pathSeparator + 'Download';
+                          dir!.path + Platform.pathSeparator + 'Download';
                       final savedDir = Directory(_localPath);
                       await savedDir
                           .create(recursive: true)
                           .then((value) async {
+                        Uri uri = Uri.parse(downloadUrl.toString().substring(downloadUrl.toString().indexOf("url:") + 5)); // extract the URL part and parse it
+                        // use FlutterDownloader.enqueue() instead of http.get()
                         String? _taskid = await FlutterDownloader.enqueue(
-                          url: downloadUrl.toString(),
+                          url: uri.toString(),
                           savedDir: _localPath,
                           showNotification: true,
                           openFileFromNotification: true,
+                          saveInPublicStorage: true,
                         );
                         print(_taskid);
+                        // store the _taskid in a variable or a list for later use
                       });
                     } else {
                       print("Permission denied");
                       // show a message that permission is denied
                     }
                   },
+
                 ),
                 progress < 1.0
                     ? LinearProgressIndicator(value: progress)

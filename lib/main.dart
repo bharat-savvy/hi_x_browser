@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nothing_browser/dashboard.dart';
+import 'package:nothing_browser/screens/dash.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       initialRoute: '/',
       routes: {
-        '/': (context) => const DashboardPage(),
+        '/': (context) => const DashboarddPage(),
       },
     );
   }

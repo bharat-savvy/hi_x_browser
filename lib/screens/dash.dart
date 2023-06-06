@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nothing_browser/inappsec.dart';
+import 'package:nothing_browser/screens/inappsec.dart';
 
 class DashboarddPage extends StatefulWidget {
   const DashboarddPage({Key? key}) : super(key: key);
