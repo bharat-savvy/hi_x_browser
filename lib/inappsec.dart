@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -5,19 +7,23 @@ import 'package:nothing_browser/dashboard.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
+// import the flutter_downloader plugin
+import 'package:flutter_downloader/flutter_downloader.dart';
+// import the path_provider plugin
+import 'package:path_provider/path_provider.dart';
+// import the permission_handler plugin
+import 'package:permission_handler/permission_handler.dart';
 
-class InAppWebViewPage extends StatefulWidget {
+class DashedPage extends StatefulWidget {
   final int index;
 
-  const InAppWebViewPage({super.key, required this.index});
+  const DashedPage({Key? key, required this.index}) : super(key: key);
 
   @override
-  State<InAppWebViewPage> createState() {
-    return _InAppWebViewPageState();
-  }
+  State<DashedPage> createState() => _DashedPageState();
 }
 
-class _InAppWebViewPageState extends State<InAppWebViewPage> {
+class _DashedPageState extends State<DashedPage> {
   final GlobalKey webViewKey = GlobalKey();
 
   //InAppWebView Settings//
@@ -28,6 +34,7 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
       allowsInlineMediaPlayback: true,
       iframeAllow: "camera; microphone",
       iframeAllowFullscreen: true,
+      // set this option to true to enable downloads
       useOnDownloadStart: true);
 
   //Refresh Page Circuler Progress bar
@@ -48,6 +55,8 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
               defaultTargetPlatform == TargetPlatform.android;
               webViewController?.reload();
             });
+    // initialize the flutter_downloader plugin
+    FlutterDownloader.initialize(debug: true);
   }
 
   void _onPressed(BuildContext context) async {
@@ -305,6 +314,36 @@ class _InAppWebViewPageState extends State<InAppWebViewPage> {
                       this.url = url.toString();
                       urlController.text = this.url;
                     });
+                  },
+                  // add the onDownloadStart event handler with permission check and download task enqueueing
+                  onDownloadStartRequest: (controller, downloadUrl) async {
+                    print("onDownloadStart $downloadUrl");
+
+                    // check and request storage permission
+                    var status = await Permission.storage.status;
+                    if (!status.isGranted) {
+                      status = await Permission.storage.request();
+                    }
+                    if (status.isGranted) {
+                      final dir = await getApplicationDocumentsDirectory();
+                      var _localPath =
+                          dir.path + Platform.pathSeparator + 'Download';
+                      final savedDir = Directory(_localPath);
+                      await savedDir
+                          .create(recursive: true)
+                          .then((value) async {
+                        String? _taskid = await FlutterDownloader.enqueue(
+                          url: downloadUrl.toString(),
+                          savedDir: _localPath,
+                          showNotification: true,
+                          openFileFromNotification: true,
+                        );
+                        print(_taskid);
+                      });
+                    } else {
+                      print("Permission denied");
+                      // show a message that permission is denied
+                    }
                   },
                 ),
                 progress < 1.0

@@ -20,24 +20,10 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       themeMode: ThemeMode.dark,
-
       initialRoute: '/',
-
       routes: {
         '/': (context) => const DashboardPage(),
-
-
-
-
-
-
-
-
-
-
       },
-
-
     );
   }
 }

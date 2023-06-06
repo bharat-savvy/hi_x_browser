@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:nothing_browser/inapp.dart';
+import 'package:nothing_browser/inappsec.dart';
 
-
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+class DashboarddPage extends StatefulWidget {
+  const DashboarddPage({Key? key}) : super(key: key);
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  State<DashboarddPage> createState() => _DashboarddPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
-
-
+class _DashboarddPageState extends State<DashboarddPage> {
   //List of Images
   List<String> images = [
     'assets/images/duck.png',
@@ -27,20 +24,25 @@ class _DashboardPageState extends State<DashboardPage> {
   ];
 
 
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Image.asset('assets/images/LogoFinal.png',
-        width: 40,
+          width: 40,
 
         ),
       ),
-      
-      
-      
-      
+
+
+
+
       body: SafeArea(
         child: Center(
           child: Container(
@@ -53,7 +55,7 @@ class _DashboardPageState extends State<DashboardPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //This is top Height
-                
+
                 //Top Height Ends Here
 
                 //This is main Logo
@@ -101,7 +103,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: GridView.count(
                     crossAxisCount: 5, // number of items per row
                     crossAxisSpacing:
-                        20, // horizontal spacing between the items
+                    20, // horizontal spacing between the items
                     mainAxisSpacing: 20, // vertical spacing between the items
                     children: List.generate(images.length, (index) {
                       return InkWell(
@@ -111,7 +113,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  InAppWebViewPage(index: index),
+                                  DashedPage(index: index),
                             ),
                           );
                         },
@@ -150,14 +152,14 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Center(
               child: InkWell(
                 child: const Text(
-            'Explore More...',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-          onTap: (){
+                  'Explore More...',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                onTap: (){
 
-          },
+                },
 
-          )
+              )
 
           ),
         ),
