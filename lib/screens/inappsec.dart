@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +7,7 @@ import 'package:nothing_browser/screens/downloads.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
-// import the flutter_downloader plugin
-import 'package:flutter_downloader/flutter_downloader.dart';
-// import the path_provider plugin
-import 'package:path_provider/path_provider.dart';
-// import the permission_handler plugin
-import 'package:permission_handler/permission_handler.dart';
+
 
 class DashedPage extends StatefulWidget {
   final int index;
@@ -48,6 +42,7 @@ class _DashedPageState extends State<DashedPage> {
   void initState() {
     super.initState();
 
+
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
@@ -56,8 +51,7 @@ class _DashedPageState extends State<DashedPage> {
               defaultTargetPlatform == TargetPlatform.android;
               webViewController?.reload();
             });
-    // initialize the flutter_downloader plugin
-    FlutterDownloader.initialize(debug: true);
+
   }
 
   void _onPressed(BuildContext context) async {
@@ -112,6 +106,7 @@ class _DashedPageState extends State<DashedPage> {
     "https://search.aol.com/aol/search?q",
   ];
 
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -141,7 +136,7 @@ class _DashedPageState extends State<DashedPage> {
                 decoration: InputDecoration(
                   //Search Bar Prefix Icon
                   prefixIcon: IconButton(
-                    icon: const Icon(Icons.add_box_outlined),
+                    icon: const Icon(Icons.download),
                     onPressed: () {
                       // push the download screen using a navigator widget
                       Navigator.push(
@@ -167,21 +162,21 @@ class _DashedPageState extends State<DashedPage> {
                     case 0: // DuckDuckGo
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[0] + "=$value"),
+                          url: WebUri("${webpages1[0]}=$value"),
                         ),
                       );
                       break;
                     case 1: // Google
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[1] + "=$value"),
+                          url: WebUri("${webpages1[1]}=$value"),
                         ),
                       );
                       break;
                     case 2: // Bing
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[2] + "=$value"),
+                          url: WebUri("${webpages1[2]}=$value"),
                         ),
                       );
                       break;
@@ -189,7 +184,7 @@ class _DashedPageState extends State<DashedPage> {
                     case 3: // Yahoo
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[3] + "=$value"),
+                          url: WebUri("${webpages1[3]}=$value"),
                         ),
                       );
                       break;
@@ -197,7 +192,7 @@ class _DashedPageState extends State<DashedPage> {
                     case 4: // Yandex
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[4] + "=$value"),
+                          url: WebUri("${webpages1[4]}=$value"),
                         ),
                       );
                       break;
@@ -205,7 +200,7 @@ class _DashedPageState extends State<DashedPage> {
                     case 5: // StartPage
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[5] + "=$value"),
+                          url: WebUri("${webpages1[5]}=$value"),
                         ),
                       );
                       break;
@@ -213,7 +208,7 @@ class _DashedPageState extends State<DashedPage> {
                     case 6: // Ask
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[6] + "=$value"),
+                          url: WebUri("${webpages1[6]}=$value"),
                         ),
                       );
                       break;
@@ -221,7 +216,7 @@ class _DashedPageState extends State<DashedPage> {
                     case 7: // Ecosia
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[7] + "=$value"),
+                          url: WebUri("${webpages1[7]}=$value"),
                         ),
                       );
                       break;
@@ -229,7 +224,7 @@ class _DashedPageState extends State<DashedPage> {
                     case 8: // WolFarm
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[8] + "=$value"),
+                          url: WebUri("${webpages1[8]}=$value"),
                         ),
                       );
                       break;
@@ -237,7 +232,7 @@ class _DashedPageState extends State<DashedPage> {
                     case 9: // Aol
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
-                          url: WebUri(webpages1[9] + "=$value"),
+                          url: WebUri("${webpages1[9]}=$value"),
                         ),
                       );
                       break;
@@ -262,6 +257,8 @@ class _DashedPageState extends State<DashedPage> {
                   pullToRefreshController: pullToRefreshController,
                   onWebViewCreated: (InAppWebViewController controller) {
                     webViewController = controller;
+
+
                   },
                   onLoadStart: (controller, url) {
                     setState(() {
@@ -322,49 +319,19 @@ class _DashedPageState extends State<DashedPage> {
                       urlController.text = this.url;
                     });
                   },
-                  // add the onDownloadStart event handler with permission check and download task enqueueing
-                  // add the onDownloadStartRequest event handler with permission check and download task enqueueing
-                  // add the onDownloadStartRequest event handler with permission check and download task enqueueing
-                  onDownloadStartRequest: (controller, downloadUrl) async {
-                    print("onDownloadStart $downloadUrl");
 
-                    // check and request storage permission
-                    var status = await Permission.storage.status;
-                    if (!status.isGranted) {
-                      status = await Permission.storage.request();
-                    }
-                    if (status.isGranted) {
-                      final dir = await getExternalStorageDirectory();
-                      var _localPath =
-                          dir!.path + Platform.pathSeparator + 'Download';
-                      final savedDir = Directory(_localPath);
-                      await savedDir
-                          .create(recursive: true)
-                          .then((value) async {
-                        Uri uri = Uri.parse(downloadUrl.toString().substring(downloadUrl.toString().indexOf("url:") + 5)); // extract the URL part and parse it
-                        // use FlutterDownloader.enqueue() instead of http.get()
-                        String? _taskid = await FlutterDownloader.enqueue(
-                          url: uri.toString(),
-                          savedDir: _localPath,
-                          showNotification: true,
-                          openFileFromNotification: true,
-                          saveInPublicStorage: true,
-                        );
-                        print(_taskid);
-                        // store the _taskid in a variable or a list for later use
-                      });
-                    } else {
-                      print("Permission denied");
-                      // show a message that permission is denied
-                    }
-                  },
+
+
+
+
 
                 ),
                 progress < 1.0
                     ? LinearProgressIndicator(value: progress)
                     : Container(),
               ],
-            ))
+            )
+            )
             //Body Ends Here
           ],
         )),
