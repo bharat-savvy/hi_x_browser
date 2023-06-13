@@ -1,8 +1,7 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:nothing_browser/dashboard.dart';
+import 'package:nothing_browser/screens/dash.dart';
 import 'package:nothing_browser/screens/downloads.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -46,7 +45,7 @@ class _DashedPageState extends State<DashedPage> {
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
-            settings: PullToRefreshSettings(color: Colors.blue),
+            settings: PullToRefreshSettings(color: Colors.deepOrangeAccent),
             onRefresh: () async {
               defaultTargetPlatform == TargetPlatform.android;
               webViewController?.reload();
@@ -61,7 +60,7 @@ class _DashedPageState extends State<DashedPage> {
     DefaultCacheManager().emptyCache();
     //use the navigator variable instead of context for navigation
     navigator.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const DashboardPage()),
+      MaterialPageRoute(builder: (context) => const DashboarddPage()),
       (route) => false,
     );
 
@@ -327,7 +326,9 @@ class _DashedPageState extends State<DashedPage> {
 
                 ),
                 progress < 1.0
-                    ? LinearProgressIndicator(value: progress)
+                    ? LinearProgressIndicator(value: progress,
+                color: Colors.deepOrangeAccent,
+                )
                     : Container(),
               ],
             )

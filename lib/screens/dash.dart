@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nothing_browser/screens/duckducksearch.dart';
 import 'package:nothing_browser/screens/inappsec.dart';
 
 class DashboarddPage extends StatefulWidget {
@@ -9,6 +10,25 @@ class DashboarddPage extends StatefulWidget {
 }
 
 class _DashboarddPageState extends State<DashboarddPage> {
+      //Main Search Bar Top Setting Starts Here
+     final TextEditingController searchController = TextEditingController();
+
+  void navigateToSearchPage(BuildContext context, String query) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DuckDuckGoSearchPage(query: query),
+      ),
+    );
+  }
+
+  //Main Search Bar Setting Ends Here
+
+
+
+
+
+
   //List of Images
   List<String> images = [
     'assets/images/duck.png',
@@ -25,20 +45,10 @@ class _DashboarddPageState extends State<DashboarddPage> {
 
 
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Image.asset('assets/images/LogoFinal.png',
-          width: 40,
 
-        ),
-      ),
 
 
 
@@ -51,85 +61,128 @@ class _DashboarddPageState extends State<DashboarddPage> {
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
                     colors: [Colors.blueGrey, Colors.black87])),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                //This is top Height
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
 
-                //Top Height Ends Here
+                  //Logo Bottom Space
+                  Image.asset('assets/images/LogoFinal.png',
+                  width: 50,
+                  ),
 
-                //This is main Logo
-                Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Colors.transparent,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blueGrey,
-                        blurRadius: 1.0,
-                        spreadRadius: 0.0,
-                        offset: Offset(0.0, 0.0),
-                        blurStyle: BlurStyle.outer,
+
+                  //Main Search Bar Design Starts Here
+                  Container(
+                    padding: const EdgeInsets.all(25.0),
+                    child: TextField(
+                      controller: searchController,
+                      style: const TextStyle(
+                        color: Colors.blueGrey
                       ),
-                    ],
-                  ),
-
-                ),
-                //Logo Container Ends Here
-
-                //Logo Bottom Space
-                const SizedBox(
-                  height: 70,
-                ),
-                //Logo Bottom Space ends here
-
-                //Select Engine Text Starts here
-                const Text(
-                  'SELECT ENGINE',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-                ),
-
-                //Select Engine Text End Here
-
-                const SizedBox(
-                  height: 10,
-                ),
-
-                //Search Engine Items Starts Here
-                Container(
-                  margin: const EdgeInsets.all(25),
-                  height: 200,
-                  color: Colors.transparent,
-                  child: GridView.count(
-                    crossAxisCount: 5, // number of items per row
-                    crossAxisSpacing:
-                    20, // horizontal spacing between the items
-                    mainAxisSpacing: 20, // vertical spacing between the items
-                    children: List.generate(images.length, (index) {
-                      return InkWell(
-                        onTap: () {
-                          // handle click event by navigating to the page
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  DashedPage(index: index),
-                            ),
-                          );
-                        },
-
-
-                        //Images Starts Here
-                        child: Image.asset(
-                          images[index],
-                          fit: BoxFit
-                              .cover, // load image from asset folder using the lis// make the image cover the available space
+                      decoration: InputDecoration(
+                        hintText: 'Search Me...',
+                        hintStyle: const TextStyle(
+                          color: Colors.blueGrey
                         ),
-                      );
-                    }),
+
+
+                        //Main Search Bar Icon
+                        prefixIcon: IconButton(
+                          color: Colors.black87,
+                          icon: const Icon(Icons.search),
+                          onPressed: () {
+                            final query = searchController.text.trim();
+                            if (query.isNotEmpty) {
+                              navigateToSearchPage(context, query);
+                            }
+                          },
+                        ),
+
+                        //Main Search Bar Ends Here
+
+
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                      ),
+                      onSubmitted: (query) {
+                        if (query.isNotEmpty) {
+                          navigateToSearchPage(context, query);
+                        }
+                      },
+                    ),
                   ),
-                )
-              ],
+
+                  //Main Search Bar Design Ends Here
+
+
+
+
+
+
+
+
+
+
+
+                  //ChatgptEnds Here
+
+
+
+                  //Select Engine Text End Here
+
+                  const SizedBox(
+                    height: 5,
+                  ),
+
+
+
+                  //Search Engine Items Starts Here
+
+                  Container(
+                    margin: const EdgeInsets.all(25),
+                    height: 200,
+                    color: Colors.transparent,
+                    child: GridView.count(
+                      crossAxisCount: 5, // number of items per row
+                      crossAxisSpacing:
+                      20, // horizontal spacing between the items
+                      mainAxisSpacing: 20, // vertical spacing between the items
+                      children: List.generate(images.length, (index) {
+                        return InkWell(
+                          onTap: () {
+                            // handle click event by navigating to the page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DashedPage(index: index),
+                              ),
+                            );
+                          },
+
+
+                          //Images Starts Here
+                          child: Image.asset(
+                            images[index],
+                            fit: BoxFit
+                                .cover, // load image from asset folder using the lis// make the image cover the available space
+                          ),
+                        );
+                      }),
+                    ),
+                  )
+
+                  //Search Engine Items End Here
+
+
+                ],
+              ),
             ),
           ),
         ),
