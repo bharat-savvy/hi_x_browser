@@ -66,10 +66,6 @@ class _DashboarddPageState extends State<DashboarddPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
 
-                  //Logo Bottom Space
-                  Image.asset('assets/images/LogoFinal.png',
-                  width: 50,
-                  ),
 
 
                   //Main Search Bar Design Starts Here
@@ -81,15 +77,15 @@ class _DashboarddPageState extends State<DashboarddPage> {
                         color: Colors.blueGrey
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Search Me...',
-                        hintStyle: const TextStyle(
-                          color: Colors.blueGrey
+                        hintText: 'I Love You ❤...',
+                        hintStyle: TextStyle(
+                          color: Colors.white.withOpacity(0.8)
                         ),
 
 
                         //Main Search Bar Icon
                         prefixIcon: IconButton(
-                          color: Colors.black87,
+                          color: Colors.white,
                           icon: const Icon(Icons.search),
                           onPressed: () {
                             final query = searchController.text.trim();
@@ -100,10 +96,8 @@ class _DashboarddPageState extends State<DashboarddPage> {
                         ),
 
                         //Main Search Bar Ends Here
-
-
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Colors.white.withOpacity(0.3),
                         border: OutlineInputBorder(
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.circular(10.0),

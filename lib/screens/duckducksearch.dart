@@ -45,7 +45,7 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
-        settings: PullToRefreshSettings(color: Colors.blue),
+        settings: PullToRefreshSettings(color: Colors.deepOrangeAccent),
         onRefresh: () async {
           defaultTargetPlatform == TargetPlatform.android;
           webViewController?.reload();
@@ -119,6 +119,7 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                   decoration: InputDecoration(
                     //Search Bar Prefix Icon
                     prefixIcon: IconButton(
+                      color: Colors.white,
                       icon: const Icon(Icons.download),
                       onPressed: () {
                         // push the download screen using a navigator widget
@@ -131,6 +132,7 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
 
                     //Search Bar Suffix icon
                     suffixIcon: IconButton(
+                      color: Colors.white,
                       icon: const Icon(Icons.cleaning_services),
                       onPressed: () => _onPressed(context),
                     ),
@@ -233,7 +235,9 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                     ),
 
                     progress < 1.0
-                        ? LinearProgressIndicator(value: progress)
+                        ? LinearProgressIndicator(value: progress,
+                    color: Colors.deepOrangeAccent,
+                    )
                         : Container(),
                   ]
                 ),
