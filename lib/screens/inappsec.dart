@@ -135,6 +135,7 @@ class _DashedPageState extends State<DashedPage> {
                 decoration: InputDecoration(
                   //Search Bar Prefix Icon
                   prefixIcon: IconButton(
+                    color: Colors.white,
                     icon: const Icon(Icons.download),
                     onPressed: () {
                       // push the download screen using a navigator widget
@@ -147,6 +148,7 @@ class _DashedPageState extends State<DashedPage> {
 
                   //Search Bar Suffix icon
                   suffixIcon: IconButton(
+                    color: Colors.white,
                     icon: const Icon(Icons.cleaning_services),
                     onPressed: () => _onPressed(context),
                   ),
@@ -335,7 +337,10 @@ class _DashedPageState extends State<DashedPage> {
             )
             //Body Ends Here
           ],
-        )),
+        )
+        ),
+
+
       ),
     );
   }
