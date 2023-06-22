@@ -73,8 +73,8 @@ class _DashboarddPageState extends State<DashboarddPage> {
                     padding: const EdgeInsets.all(25.0),
                     child: TextField(
                       controller: searchController,
-                      style: const TextStyle(
-                        color: Colors.blueGrey
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8)
                       ),
                       decoration: InputDecoration(
                         hintText: 'I Love You ❤...',
