@@ -30,7 +30,6 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
       iframeAllowFullscreen: true,
       // set this option to true to enable downloads
       useOnDownloadStart: true,
-
   );
 
 
