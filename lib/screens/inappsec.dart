@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:nothing_browser/screens/dash.dart';
-import 'package:nothing_browser/screens/downloads.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
@@ -139,10 +138,7 @@ class _DashedPageState extends State<DashedPage> {
                     icon: const Icon(Icons.download),
                     onPressed: () {
                       // push the download screen using a navigator widget
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const DownloadScreen()),
-                      );
+
                     },
                   ),
 

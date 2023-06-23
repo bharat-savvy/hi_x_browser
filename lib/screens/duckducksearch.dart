@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -5,7 +6,10 @@ import 'package:nothing_browser/screens/dash.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 class DuckDuckGoSearchPage extends StatefulWidget {
   final String query;
@@ -51,9 +55,26 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
               defaultTargetPlatform == TargetPlatform.android;
               webViewController?.reload();
             });
+
+
+    // Initialize the webview
+    webViewController?.addJavaScriptHandler(
+      handlerName: 'onDownloadRequest',
+      callback: (args) {
+        final url = args[0] as String;
+        final suggestedFilename = args[1] as String;
+        downloadFile(url, suggestedFilename);
+      },
+    );
+
   }
 
-  void _onPressed(BuildContext context) async {
+
+
+
+
+
+  void _clearCache(BuildContext context) async {
     //store the navigator instance in a local variable
     final navigator = Navigator.of(context);
     //show confirmation dialog
@@ -75,6 +96,39 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
     );
 
     //ToastNotification Ends Here
+  }
+
+
+  Future<void> downloadFile(String url, String suggestedFilename) async {
+    bool hasStoragePermission = await requestStoragePermission();
+    if (hasStoragePermission) {
+      final dio = Dio();
+      try {
+        final response = await dio.get(
+          url,
+          options: Options(responseType: ResponseType.bytes),
+        );
+
+        final appDocumentsDirectory = await getApplicationDocumentsDirectory();
+        final filePath = '${appDocumentsDirectory.path}/Download/$suggestedFilename';
+        final file = File(filePath);
+
+        await file.writeAsBytes(response.data, flush: true);
+
+        // File downloaded successfully, you can perform further actions here
+        // For example, show a success toast notification or open the downloaded file
+      } catch (e) {
+        // Handle the error
+        // For example, show an error toast notification or display an error dialog
+      }
+    } else {
+      // Show a message or dialog indicating that storage permission is required
+    }
+  }
+
+  Future<bool> requestStoragePermission() async {
+    PermissionStatus status = await Permission.storage.request();
+    return status.isGranted;
   }
 
 
@@ -122,7 +176,7 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                       suffixIcon: IconButton(
                         color: Colors.white,
                         icon: const Icon(Icons.cleaning_services),
-                        onPressed: () => _onPressed(context),
+                        onPressed: () => _clearCache(context),
                       ),
                     ),
                     //Search Bar Text Field Starts Here
@@ -203,14 +257,34 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                         urlController.text = this.url;
                       });
                     },
+
+
+                    //Download Logic Starts Here
+
                     onDownloadStartRequest: (controller, url) async {
-                      await FlutterDownloader.enqueue(
-                        url: url.toString(),
-                        savedDir: '/storage/emulated/0/Download/', // Specify the directory to save the downloaded files
-                        showNotification: true,
-                        openFileFromNotification: true,
+                      final uri = url.toString();
+
+                      final suggestedFilename = uri.split('/').last;
+                      downloadFile(uri, suggestedFilename);
+
+                      toastification.show(
+                        context: context,
+                        title: 'Download Started',
+                        autoCloseDuration: const Duration(seconds: 3),
+                        icon: const Icon(Icons.download),
+                        backgroundColor: Colors.blueGrey,
+                        foregroundColor: Colors.white,
                       );
                     },
+
+
+
+
+
+
+
+
+                    //Download Logic Ends Here
 
 
 
