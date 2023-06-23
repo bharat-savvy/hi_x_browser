@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:path_provider/path_provider.dart';
 
 class DuckDuckGoSearchPage extends StatefulWidget {
   final String query;
@@ -38,11 +37,6 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
   String url = "";
   double progress = 0;
   final urlController = TextEditingController();
-
-
-  //ChatGPT CODE Starts Here
-  List<String> navigationHistory = [];
-  //ChatGPT Code Ends Here
 
 
   @override
@@ -83,22 +77,6 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
     //ToastNotification Ends Here
   }
 
-
-
-  //ChatGPT Code Can Be delete
-
-
-
-  Future<void> downloadFile(String url) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final savedDir = directory.path;
-    await FlutterDownloader.enqueue(
-      url: url,
-      savedDir: savedDir,
-      showNotification: true,
-      openFileFromNotification: true,
-    );
-  }
 
 
 
@@ -225,11 +203,19 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                         urlController.text = this.url;
                       });
                     },
-                    onDownloadStartRequest: (controller, download) async {
-                      final DownloadStartRequest request = download;
-                      final String url = request.url.toString();
-                      downloadFile(url);
+                    onDownloadStartRequest: (controller, url) async {
+                      await FlutterDownloader.enqueue(
+                        url: url.toString(),
+                        savedDir: '/storage/emulated/0/Download/', // Specify the directory to save the downloaded files
+                        showNotification: true,
+                        openFileFromNotification: true,
+                      );
                     },
+
+
+
+
+
 
                   ),
                   progress < 1.0
