@@ -10,8 +10,8 @@ class DashboarddPage extends StatefulWidget {
 }
 
 class _DashboarddPageState extends State<DashboarddPage> {
-      //Main Search Bar Top Setting Starts Here
-     final TextEditingController searchController = TextEditingController();
+  //Main Search Bar Top Setting Starts Here
+  final TextEditingController searchController = TextEditingController();
 
   void navigateToSearchPage(BuildContext context, String query) {
     Navigator.push(
@@ -23,11 +23,6 @@ class _DashboarddPageState extends State<DashboarddPage> {
   }
 
   //Main Search Bar Setting Ends Here
-
-
-
-
-
 
   //List of Images
   List<String> images = [
@@ -43,16 +38,9 @@ class _DashboarddPageState extends State<DashboarddPage> {
     'assets/images/aol.png',
   ];
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-
-
-
-
       body: SafeArea(
         child: Center(
           child: Container(
@@ -65,23 +53,16 @@ class _DashboarddPageState extends State<DashboarddPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
-
-
                   //Main Search Bar Design Starts Here
                   Container(
                     padding: const EdgeInsets.all(25.0),
                     child: TextField(
                       controller: searchController,
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8)
-                      ),
+                      style: TextStyle(color: Colors.white.withOpacity(0.8)),
                       decoration: InputDecoration(
                         hintText: 'I Love You ❤...',
-                        hintStyle: TextStyle(
-                          color: Colors.white.withOpacity(0.8)
-                        ),
-
+                        hintStyle:
+                            TextStyle(color: Colors.white.withOpacity(0.8)),
 
                         //Main Search Bar Icon
                         prefixIcon: IconButton(
@@ -102,7 +83,8 @@ class _DashboarddPageState extends State<DashboarddPage> {
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 16.0),
                       ),
                       onSubmitted: (query) {
                         if (query.isNotEmpty) {
@@ -114,27 +96,13 @@ class _DashboarddPageState extends State<DashboarddPage> {
 
                   //Main Search Bar Design Ends Here
 
-
-
-
-
-
-
-
-
-
-
                   //ChatgptEnds Here
-
-
 
                   //Select Engine Text End Here
 
                   const SizedBox(
                     height: 5,
                   ),
-
-
 
                   //Search Engine Items Starts Here
 
@@ -145,7 +113,7 @@ class _DashboarddPageState extends State<DashboarddPage> {
                     child: GridView.count(
                       crossAxisCount: 5, // number of items per row
                       crossAxisSpacing:
-                      20, // horizontal spacing between the items
+                          20, // horizontal spacing between the items
                       mainAxisSpacing: 20, // vertical spacing between the items
                       children: List.generate(images.length, (index) {
                         return InkWell(
@@ -154,12 +122,10 @@ class _DashboarddPageState extends State<DashboarddPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    DashedPage(index: index),
+                                builder: (context) => DashedPage(index: index),
                               ),
                             );
                           },
-
 
                           //Images Starts Here
                           child: Image.asset(
@@ -173,8 +139,6 @@ class _DashboarddPageState extends State<DashboarddPage> {
                   )
 
                   //Search Engine Items End Here
-
-
                 ],
               ),
             ),
@@ -198,17 +162,12 @@ class _DashboarddPageState extends State<DashboarddPage> {
           elevation: 50,
           child: Center(
               child: InkWell(
-                child: const Text(
-                  'Explore More...',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                onTap: (){
-
-                },
-
-              )
-
-          ),
+            child: const Text(
+              'Explore More...',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            onTap: () {},
+          )),
         ),
       ),
     );

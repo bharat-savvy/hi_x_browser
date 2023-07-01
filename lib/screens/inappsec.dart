@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -5,6 +7,7 @@ import 'package:nothing_browser/screens/dash.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
+import 'package:dio/dio.dart';
 
 
 class DashedPage extends StatefulWidget {
@@ -28,13 +31,17 @@ class _DashedPageState extends State<DashedPage> {
       iframeAllow: "camera; microphone",
       iframeAllowFullscreen: true,
       // set this option to true to enable downloads
-      useOnDownloadStart: true);
+      useOnDownloadStart: true,
 
-  //Refresh Page Circuler Progress bar
+  );
+
+  //Refresh Page Circule432r Progress bar
   PullToRefreshController? pullToRefreshController;
   String url = "";
   double progress = 0;
   final urlController = TextEditingController();
+  String? downloadUrl; // Stores the download URL //ChatGPTCode1
+  bool isDownloadable = false; // Indicates if the current page has a downloadable resource
 
   @override
   void initState() {
@@ -49,8 +56,74 @@ class _DashedPageState extends State<DashedPage> {
               defaultTargetPlatform == TargetPlatform.android;
               webViewController?.reload();
             });
-
+    // Initialize the download button color
+    updateDownloadButtonColor(false); //ChatGPTCode1
   }
+  //ChatGPTCode1
+  void updateDownloadButtonColor(bool isDownloadable) {
+    setState(() {
+      this.isDownloadable = isDownloadable;
+    });
+  }
+
+  Future<void> _onDownloadPressed() async {
+    if (downloadUrl != null) {
+      // Decode the URL to handle special characters
+      final decodedUrl = Uri.decodeComponent(downloadUrl!);
+      final uri = Uri.parse(decodedUrl);
+      final baseUrl = '${uri.scheme}://${uri.host}${uri.path}';
+      final HttpClient httpClient = HttpClient();
+      final HttpClientRequest request = await httpClient.getUrl(uri);
+      final HttpClientResponse response = await request.close();
+
+      // Extract the file name from the response headers
+      final contentDispositionHeader = response.headers.value('content-disposition');
+      String fileName = '';
+      if (contentDispositionHeader != null) {
+        final regex = RegExp('filename=[\'"]?([^\'"s]+)');
+        final matches = regex.allMatches(contentDispositionHeader);
+        if (matches.isNotEmpty) {
+          final match = matches.first;
+          fileName = match.group(1) ?? '';
+        }
+      }
+
+      // File name and path where the downloaded file will be saved
+      String savePath = "/storage/emulated/0/Download/$fileName"; // Replace with the desired save path and include the file name
+
+      try {
+        Dio dio = Dio();
+        await dio.download(baseUrl, savePath);
+
+        // Show a success message or perform other actions after successful download
+        toastification.show(
+          context: context,
+          title: 'Download completed!',
+          autoCloseDuration: const Duration(seconds: 3),
+          icon: const Icon(Icons.check),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+        );
+      } catch (e) {
+        // Handle any download errors
+        toastification.show(
+          context: context,
+          title: 'Download failed!',
+          autoCloseDuration: const Duration(seconds: 3),
+          icon: const Icon(Icons.error),
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+        );
+        print("Error downloading file: $e");
+      }
+    }
+  }
+
+
+
+  //ChatGPTCode12
+
+
 
   void _onPressed(BuildContext context) async {
     //store the navigator instance in a local variable
@@ -105,6 +178,20 @@ class _DashedPageState extends State<DashedPage> {
   ];
 
 
+  //ChatGPT Download COde
+
+
+
+
+
+
+  //ChatGPT COde End
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -135,7 +222,7 @@ class _DashedPageState extends State<DashedPage> {
                   //Search Bar Prefix Icon
                   prefixIcon: IconButton(
                     color: Colors.white,
-                    icon: const Icon(Icons.download),
+                    icon: const Icon(Icons.refresh),
                     onPressed: () {
                       // push the download screen using a navigator widget
 
@@ -316,18 +403,29 @@ class _DashedPageState extends State<DashedPage> {
                       urlController.text = this.url;
                     });
                   },
-
-
-
-
-
-
+                  onDownloadStartRequest: (controller, url) {
+                    setState(() {
+                      downloadUrl = url.toString();
+                      updateDownloadButtonColor(true);
+                    }
+                    );
+                  }
                 ),
                 progress < 1.0
                     ? LinearProgressIndicator(value: progress,
                 color: Colors.deepOrangeAccent,
                 )
                     : Container(),
+                if (isDownloadable)
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    width: double.infinity,
+                    color: Colors.black,
+                    child: ElevatedButton(
+                      onPressed: _onDownloadPressed,
+                      child: const Text('Download File'),
+                    ),
+                  )
               ],
             )
             )
@@ -335,6 +433,20 @@ class _DashedPageState extends State<DashedPage> {
           ],
         )
         ),
+
+        //ChatGPTCode1 can Safely Delete
+        floatingActionButton: FloatingActionButton(
+          onPressed: isDownloadable ? _onDownloadPressed : null,
+          child: Icon(
+            Icons.download,
+            color: isDownloadable ? Colors.red : null,
+          ),
+
+
+        ),
+
+        //ChatGPTCode1 can Safely Delete End
+
 
 
       ),
