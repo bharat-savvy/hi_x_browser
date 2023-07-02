@@ -42,6 +42,9 @@ dependencies:
   permission_handler: ^10.2.0
   path_provider: ^2.0.15
   dio: ^5.2.1+1
+  http: ^0.13.6
+  flutter_file_downloader: ^1.1.2
+  flutter_local_notifications: ^15.0.0
 
 
 

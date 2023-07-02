@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -6,10 +5,8 @@ import 'package:nothing_browser/screens/dash.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
-import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class DuckDuckGoSearchPage extends StatefulWidget {
   final String query;
@@ -26,15 +23,19 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
   //InAppWebView Settings//
   InAppWebViewController? webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
-      useShouldOverrideUrlLoading: true,
-      mediaPlaybackRequiresUserGesture: false,
-      allowsInlineMediaPlayback: true,
-      iframeAllow: "camera; microphone",
-      iframeAllowFullscreen: true,
-      // set this option to true to enable downloads
-      useOnDownloadStart: true,
+    useShouldOverrideUrlLoading: true,
+    mediaPlaybackRequiresUserGesture: false,
+    allowsInlineMediaPlayback: true,
+    iframeAllow: "camera; microphone",
+    iframeAllowFullscreen: true,
+    // set this option to true to enable downloads
+    useOnDownloadStart: true,
+    javaScriptCanOpenWindowsAutomatically: true,
+    javaScriptEnabled: true,
+    supportZoom: true,
+    supportMultipleWindows: true,
+    allowFileAccess: true,
   );
-
 
 //Refresh Page Circuler Progress bar
   PullToRefreshController? pullToRefreshController;
@@ -42,6 +43,8 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
   double progress = 0;
   final urlController = TextEditingController();
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
@@ -56,21 +59,68 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
               webViewController?.reload();
             });
 
-
     // Initialize the webview
-    webViewController?.addJavaScriptHandler(
-      handlerName: 'onDownloadRequest',
-      callback: (args) {
-        final url = args[0] as String;
-        final suggestedFilename = args[1] as String;
-        downloadFile(url, suggestedFilename);
-      },
-    );
+    // Initialize the local notification plugin
+    var initializationSettingsAndroid =
+    const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid);
 
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
+  Future<void> downloadFile(String url, String filename) async {
+    try {
+      await FileDownloader.downloadFile(
+        url: url,
+        name: filename,
+        onProgress: (String? fileName, double? progress) {
+          if (fileName != null && progress != null) {
+            print('FILE $fileName HAS PROGRESS $progress');
+            showDownloadNotification(fileName, progress.toInt());
 
+          }
+        },
+        onDownloadCompleted: (String? path) {
+          if (path != null) {
+            print('FILE DOWNLOADED TO PATH: $path');
+            flutterLocalNotificationsPlugin.cancel(0);
 
+          }
+        },
+        onDownloadError: (String? error) {
+          if (error != null) {
+            print('DOWNLOAD ERROR: $error');
+            flutterLocalNotificationsPlugin.cancel(0);
+          }
+        },
+      );
+    } catch (e) {
+      print('Error downloading file: $e');
+    }
+  }
+  Future<void> showDownloadNotification(String fileName, int progress) async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'download_channel',
+      'Downloads',
+      importance: Importance.high,
+      priority: Priority.high,
+      onlyAlertOnce: true,
+      showProgress: true,
+      maxProgress: 100,
+      progress: progress,
+      indeterminate: progress == 0,
+    );
+    var platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Downloading File',
+      fileName,
+      platformChannelSpecifics,
+      payload: fileName,
+    );
+  }
 
 
 
@@ -97,45 +147,6 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
 
     //ToastNotification Ends Here
   }
-
-
-  Future<void> downloadFile(String url, String suggestedFilename) async {
-    bool hasStoragePermission = await requestStoragePermission();
-    if (hasStoragePermission) {
-      final dio = Dio();
-      try {
-        final response = await dio.get(
-          url,
-          options: Options(responseType: ResponseType.bytes),
-        );
-
-        final appDocumentsDirectory = await getApplicationDocumentsDirectory();
-        final filePath = '${appDocumentsDirectory.path}/Download/$suggestedFilename';
-        final file = File(filePath);
-
-        await file.writeAsBytes(response.data, flush: true);
-
-        // File downloaded successfully, you can perform further actions here
-        // For example, show a success toast notification or open the downloaded file
-      } catch (e) {
-        // Handle the error
-        // For example, show an error toast notification or display an error dialog
-      }
-    } else {
-      // Show a message or dialog indicating that storage permission is required
-    }
-  }
-
-  Future<bool> requestStoragePermission() async {
-    PermissionStatus status = await Permission.storage.request();
-    return status.isGranted;
-  }
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -258,39 +269,15 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                       });
                     },
 
-
                     //Download Logic Starts Here
 
-                    onDownloadStartRequest: (controller, url) async {
-                      final uri = url.toString();
-
-                      final suggestedFilename = uri.split('/').last;
-                      downloadFile(uri, suggestedFilename);
-
-                      toastification.show(
-                        context: context,
-                        title: 'Download Started',
-                        autoCloseDuration: const Duration(seconds: 3),
-                        icon: const Icon(Icons.download),
-                        backgroundColor: Colors.blueGrey,
-                        foregroundColor: Colors.white,
-                      );
+                    onDownloadStartRequest: (controller, urlRequest) async {
+                      final url = urlRequest.url.toString();
+                      final filename = url.substring(url.lastIndexOf('/') + 1);
+                      await downloadFile(url, filename);
                     },
 
-
-
-
-
-
-
-
                     //Download Logic Ends Here
-
-
-
-
-
-
                   ),
                   progress < 1.0
                       ? LinearProgressIndicator(
@@ -314,14 +301,12 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                     }
                   },
                 ),
-
                 IconButton(
                   icon: const Icon(Icons.refresh),
                   onPressed: () {
                     webViewController?.reload();
                   },
                 ),
-
                 IconButton(
                   icon: const Icon(Icons.arrow_forward),
                   onPressed: () async {
@@ -330,7 +315,6 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                     }
                   },
                 ),
-
               ],
             ),
           ),

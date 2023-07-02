@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -6,8 +5,7 @@ import 'package:nothing_browser/screens/dash.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
-import 'package:dio/dio.dart';
-
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 
 class DashedPage extends StatefulWidget {
   final int index;
@@ -24,14 +22,13 @@ class _DashedPageState extends State<DashedPage> {
   //InAppWebView Settings//
   InAppWebViewController? webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
-      useShouldOverrideUrlLoading: true,
-      mediaPlaybackRequiresUserGesture: false,
-      allowsInlineMediaPlayback: true,
-      iframeAllow: "camera; microphone",
-      iframeAllowFullscreen: true,
-      // set this option to true to enable downloads
-      useOnDownloadStart: true,
-
+    useShouldOverrideUrlLoading: true,
+    mediaPlaybackRequiresUserGesture: false,
+    allowsInlineMediaPlayback: true,
+    iframeAllow: "camera; microphone",
+    iframeAllowFullscreen: true,
+    // set this option to true to enable downloads
+    useOnDownloadStart: true,
   );
 
   //Refresh Page Circule432r Progress bar
@@ -40,12 +37,14 @@ class _DashedPageState extends State<DashedPage> {
   double progress = 0;
   final urlController = TextEditingController();
   String? downloadUrl; // Stores the download URL //ChatGPTCode1
-  bool isDownloadable = false; // Indicates if the current page has a downloadable resource
+  bool isDownloadable = false;
+  bool showDownloadButton = false;
+
+// Indicates if the current page has a downloadable resource
 
   @override
   void initState() {
     super.initState();
-
 
     pullToRefreshController = kIsWeb
         ? null
@@ -56,73 +55,55 @@ class _DashedPageState extends State<DashedPage> {
               webViewController?.reload();
             });
     // Initialize the download button color
-    updateDownloadButtonColor(false); //ChatGPTCode1
+    updateDownloadButtonColor(false);
+
+
+
+
+    //ChatGPTCode1
   }
+
   //ChatGPTCode1
   void updateDownloadButtonColor(bool isDownloadable) {
     setState(() {
       this.isDownloadable = isDownloadable;
+      showDownloadButton = isDownloadable;
     });
   }
 
-  Future<void> _onDownloadPressed() async {
-    if (downloadUrl != null) {
-      // Decode the URL to handle special characters
-      final decodedUrl = Uri.decodeComponent(downloadUrl!);
-      final uri = Uri.parse(decodedUrl);
-      final baseUrl = '${uri.scheme}://${uri.host}${uri.path}';
-      final HttpClient httpClient = HttpClient();
-      final HttpClientRequest request = await httpClient.getUrl(uri);
-      final HttpClientResponse response = await request.close();
+  void _onDownloadPressed() async {
+    try {
+      // Retrieve the download URL and filename from the state variables
+      final url = downloadUrl;
+      const filename = 'nothing'; // Provide a default filename here
 
-      // Extract the file name from the response headers
-      final contentDispositionHeader = response.headers.value('content-disposition');
-      String fileName = '';
-      if (contentDispositionHeader != null) {
-        final regex = RegExp('filename=[\'"]?([^\'"s]+)');
-        final matches = regex.allMatches(contentDispositionHeader);
-        if (matches.isNotEmpty) {
-          final match = matches.first;
-          fileName = match.group(1) ?? '';
-        }
-      }
-
-      // File name and path where the downloaded file will be saved
-      String savePath = "/storage/emulated/0/Download/$fileName"; // Replace with the desired save path and include the file name
-
-      try {
-        Dio dio = Dio();
-        await dio.download(baseUrl, savePath);
-
-        // Show a success message or perform other actions after successful download
-        toastification.show(
-          context: context,
-          title: 'Download completed!',
-          autoCloseDuration: const Duration(seconds: 3),
-          icon: const Icon(Icons.check),
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
+      if (url != null) {
+        await FileDownloader.downloadFile(
+          url: url,
+          name: filename,
+          onProgress: (String? fileName, double? progress) {
+            if (fileName != null && progress != null) {
+              print('FILE $fileName HAS PROGRESS $progress');
+            }
+          },
+          onDownloadCompleted: (String? path) {
+            if (path != null) {
+              print('FILE DOWNLOADED TO PATH: $path');
+            }
+          },
+          onDownloadError: (String? error) {
+            if (error != null) {
+              print('DOWNLOAD ERROR: $error');
+            }
+          },
         );
-      } catch (e) {
-        // Handle any download errors
-        toastification.show(
-          context: context,
-          title: 'Download failed!',
-          autoCloseDuration: const Duration(seconds: 3),
-          icon: const Icon(Icons.error),
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-        );
-        print("Error downloading file: $e");
       }
+    } catch (e) {
+      print('Error downloading file: $e');
     }
   }
 
-
-
   //ChatGPTCode12
-
-
 
   void _onPressed(BuildContext context) async {
     //store the navigator instance in a local variable
@@ -140,7 +121,7 @@ class _DashedPageState extends State<DashedPage> {
       context: context,
       title: 'Everything Cleared',
       autoCloseDuration: const Duration(seconds: 3),
-      icon: const Icon(Icons.check),
+      icon: const Icon(Icons.local_fire_department_sharp, color: Colors.yellow,),
       backgroundColor: Colors.blueGrey,
       foregroundColor: Colors.white,
     );
@@ -176,20 +157,9 @@ class _DashedPageState extends State<DashedPage> {
     "https://search.aol.com/aol/search?q",
   ];
 
-
   //ChatGPT Download COde
 
-
-
-
-
-
   //ChatGPT COde End
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -210,28 +180,21 @@ class _DashedPageState extends State<DashedPage> {
         body: SafeArea(
             child: Column(
           children: [
-            Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: [Colors.blueGrey, Colors.black87])),
-              child: TextField(
+            TextField(
                 decoration: InputDecoration(
+                  hintText: 'Search Here...',
                   //Search Bar Prefix Icon
                   prefixIcon: IconButton(
                     color: Colors.white,
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Icons.downloading),
                     onPressed: () {
-                      // push the download screen using a navigator widget
-
                     },
                   ),
 
                   //Search Bar Suffix icon
                   suffixIcon: IconButton(
-                    color: Colors.white,
-                    icon: const Icon(Icons.cleaning_services),
+                    color: Colors.yellow,
+                    icon: const Icon(Icons.local_fire_department_rounded),
                     onPressed: () => _onPressed(context),
                   ),
                 ),
@@ -324,7 +287,7 @@ class _DashedPageState extends State<DashedPage> {
                   }
                 },
               ),
-            ),
+
 
             //Search Bar Text Field End Here
 
@@ -333,121 +296,109 @@ class _DashedPageState extends State<DashedPage> {
                 child: Stack(
               children: [
                 InAppWebView(
-                  key: webViewKey,
-                  initialUrlRequest:
-                      URLRequest(url: WebUri(webpages[widget.index])),
-                  initialSettings: settings,
-                  pullToRefreshController: pullToRefreshController,
-                  onWebViewCreated: (InAppWebViewController controller) {
-                    webViewController = controller;
+                    key: webViewKey,
+                    initialUrlRequest:
+                        URLRequest(url: WebUri(webpages[widget.index])),
+                    initialSettings: settings,
+                    pullToRefreshController: pullToRefreshController,
+                    onWebViewCreated: (InAppWebViewController controller) {
+                      webViewController = controller;
+                    },
+                    onLoadStart: (controller, url) {
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+                    onPermissionRequest: (controller, request) async {
+                      return PermissionResponse(
+                          resources: request.resources,
+                          action: PermissionResponseAction.GRANT);
+                    },
+                    shouldOverrideUrlLoading:
+                        (controller, navigationAction) async {
+                      var uri = navigationAction.request.url!;
 
+                      if (![
+                        "http",
+                        "https",
+                        "file",
+                        "chrome",
+                        "data",
+                        "javascript",
+                        "about"
+                      ].contains(uri.scheme)) {
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(
+                            uri,
+                          );
 
-                  },
-                  onLoadStart: (controller, url) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onPermissionRequest: (controller, request) async {
-                    return PermissionResponse(
-                        resources: request.resources,
-                        action: PermissionResponseAction.GRANT);
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
-
-                    if (![
-                      "http",
-                      "https",
-                      "file",
-                      "chrome",
-                      "data",
-                      "javascript",
-                      "about"
-                    ].contains(uri.scheme)) {
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(
-                          uri,
-                        );
-
-                        return NavigationActionPolicy.CANCEL;
+                          return NavigationActionPolicy.CANCEL;
+                        }
                       }
-                    }
-                    return NavigationActionPolicy.ALLOW;
-                  },
-                  onLoadStop: (controller, url) async {
-                    pullToRefreshController?.endRefreshing();
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onReceivedError: (controller, request, error) {
-                    pullToRefreshController?.endRefreshing();
-                  },
-                  onProgressChanged: (controller, progress) {
-                    if (progress == 100) {
+                      return NavigationActionPolicy.ALLOW;
+                    },
+                    onLoadStop: (controller, url) async {
                       pullToRefreshController?.endRefreshing();
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+                    onReceivedError: (controller, request, error) {
+                      pullToRefreshController?.endRefreshing();
+                    },
+                    onProgressChanged: (controller, progress) {
+                      if (progress == 100) {
+                        pullToRefreshController?.endRefreshing();
+                      }
+                      setState(() {
+                        this.progress = progress / 100;
+                        urlController.text = url;
+                      });
+                    },
+                    onUpdateVisitedHistory: (controller, url, androidIsReload) {
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+                    onDownloadStartRequest: (controller, request) {
+                      final url =
+                          request.url.toString(); // Convert the URL to a String
+                      setState(() {
+                        downloadUrl = url;
+                        updateDownloadButtonColor(true);
+                      });
                     }
-                    setState(() {
-                      this.progress = progress / 100;
-                      urlController.text = url;
-                    });
-                  },
-                  onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onDownloadStartRequest: (controller, url) {
-                    setState(() {
-                      downloadUrl = url.toString();
-                      updateDownloadButtonColor(true);
-                    }
-                    );
-                  }
-                ),
-                progress < 1.0
-                    ? LinearProgressIndicator(value: progress,
-                color: Colors.deepOrangeAccent,
-                )
-                    : Container(),
-                if (isDownloadable)
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    width: double.infinity,
-                    color: Colors.black,
-                    child: ElevatedButton(
-                      onPressed: _onDownloadPressed,
-                      child: const Text('Download File'),
+
+
+
                     ),
-                  )
+                progress < 1.0
+                    ? LinearProgressIndicator(
+                        value: progress,
+                        color: Colors.deepOrangeAccent,
+                      )
+                    : Container(),
               ],
-            )
-            )
+            ))
             //Body Ends Here
           ],
-        )
-        ),
+        )),
 
         //ChatGPTCode1 can Safely Delete
-        floatingActionButton: FloatingActionButton(
-          onPressed: isDownloadable ? _onDownloadPressed : null,
-          child: Icon(
-            Icons.download,
-            color: isDownloadable ? Colors.red : null,
-          ),
-
-
-        ),
+        floatingActionButton: showDownloadButton
+            ? FloatingActionButton(
+                backgroundColor: Colors.redAccent,
+                onPressed: isDownloadable ? _onDownloadPressed : null,
+                child: const Icon(
+                  Icons.download,
+                  color: Colors.white,
+                ))
+            : null,
 
         //ChatGPTCode1 can Safely Delete End
-
-
-
       ),
     );
   }
