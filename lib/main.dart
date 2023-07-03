@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nothing_browser/screens/dash.dart';
+import 'package:nothing_browser/pages/dash.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -14,9 +15,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Nothing Browser',
       theme: ThemeData(
+        useMaterial3: true,
         brightness: Brightness.light,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       darkTheme: ThemeData(
+        useMaterial3: true
+        ,
         brightness: Brightness.dark,
       ),
       themeMode: ThemeMode.dark,

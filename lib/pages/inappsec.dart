@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:nothing_browser/screens/dash.dart';
+import 'package:nothing_browser/parts/duck_header.dart';
+import 'package:nothing_browser/websitedetails/websitedata.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:toastification/toastification.dart';
-import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nothing_browser/parts/download_helper.dart';
+
+
 
 class DashedPage extends StatefulWidget {
   final int index;
@@ -29,6 +31,11 @@ class _DashedPageState extends State<DashedPage> {
     iframeAllowFullscreen: true,
     // set this option to true to enable downloads
     useOnDownloadStart: true,
+    javaScriptCanOpenWindowsAutomatically: true,
+    javaScriptEnabled: true,
+    supportZoom: true,
+    supportMultipleWindows: true,
+    allowFileAccess: true,
   );
 
   //Refresh Page Circule432r Progress bar
@@ -37,10 +44,13 @@ class _DashedPageState extends State<DashedPage> {
   double progress = 0;
   final urlController = TextEditingController();
   String? downloadUrl; // Stores the download URL //ChatGPTCode1
-  bool isDownloadable = false;
-  bool showDownloadButton = false;
 
-// Indicates if the current page has a downloadable resource
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+  List<String> webpages = [];
+  List<String> webpages1 = [];
+
+  //scroll hidden implementation
 
   @override
   void initState() {
@@ -49,113 +59,44 @@ class _DashedPageState extends State<DashedPage> {
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
-            settings: PullToRefreshSettings(color: Colors.deepOrangeAccent),
+            settings: PullToRefreshSettings(color: Colors.green.withOpacity(0.5)),
             onRefresh: () async {
               defaultTargetPlatform == TargetPlatform.android;
               webViewController?.reload();
             });
+
+    webpages = List.from(websiteData['webpages']!);
+    webpages1 = List.from(websiteData['webpages1']!);
+
     // Initialize the download button color
-    updateDownloadButtonColor(false);
 
+    var initializationSettingsAndroid =
+    const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid);
 
-
-
-    //ChatGPTCode1
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  //ChatGPTCode1
-  void updateDownloadButtonColor(bool isDownloadable) {
-    setState(() {
-      this.isDownloadable = isDownloadable;
-      showDownloadButton = isDownloadable;
+
+  Future<void> downloadFile(String url, String filename) async {
+    await DownloadHelper.downloadFile(url, filename, (fileName, progress) {
+      showDownloadNotification(fileName, progress.toInt());
     });
   }
 
-  void _onDownloadPressed() async {
-    try {
-      // Retrieve the download URL and filename from the state variables
-      final url = downloadUrl;
-      const filename = 'nothing'; // Provide a default filename here
-
-      if (url != null) {
-        await FileDownloader.downloadFile(
-          url: url,
-          name: filename,
-          onProgress: (String? fileName, double? progress) {
-            if (fileName != null && progress != null) {
-              print('FILE $fileName HAS PROGRESS $progress');
-            }
-          },
-          onDownloadCompleted: (String? path) {
-            if (path != null) {
-              print('FILE DOWNLOADED TO PATH: $path');
-            }
-          },
-          onDownloadError: (String? error) {
-            if (error != null) {
-              print('DOWNLOAD ERROR: $error');
-            }
-          },
-        );
-      }
-    } catch (e) {
-      print('Error downloading file: $e');
-    }
+  Future<void> showDownloadNotification(String fileName, int progress) async {
+    await NotificationHelper.showDownloadNotification(fileName, progress);
   }
 
   //ChatGPTCode12
 
-  void _onPressed(BuildContext context) async {
-    //store the navigator instance in a local variable
-    final navigator = Navigator.of(context);
-    //show confirmation dialog
-    DefaultCacheManager().emptyCache();
-    //use the navigator variable instead of context for navigation
-    navigator.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const DashboarddPage()),
-      (route) => false,
-    );
 
-    //ToastNotification Files
-    toastification.show(
-      context: context,
-      title: 'Everything Cleared',
-      autoCloseDuration: const Duration(seconds: 3),
-      icon: const Icon(Icons.local_fire_department_sharp, color: Colors.yellow,),
-      backgroundColor: Colors.blueGrey,
-      foregroundColor: Colors.white,
-    );
 
     //ToastNotification Ends Here
-  }
+
 
   // A list of webpages to load for each button
-  final List<String> webpages = [
-    'https://start.duckduckgo.com/',
-    'https://www.google.com/',
-    'https://www.bing.com/',
-    'https://www.yahoo.com/',
-    'https://yandex.com/',
-    'https://startpage.com/',
-    'https://www.ask.com/',
-    'https://www.ecosia.org/',
-    'https://www.wolframalpha.com/',
-    'https://search.aol.com/',
-  ];
-
-  //A List of Webpages 2 for top search bar
-  final List<String> webpages1 = [
-    "https://duckduckgo.com/?q",
-    "https://www.google.com/search?q",
-    "https://www.bing.com/search?q",
-    "https://search.yahoo.com/search?q",
-    "https://yandex.com/search/touch/?text",
-    "https://startpage.com/search?q",
-    "https://www.ask.com/web?q",
-    "https://www.ecosia.com/search?method=index&q",
-    "https://www.wolframalpha.com/input?i",
-    "https://search.aol.com/aol/search?q",
-  ];
 
   //ChatGPT Download COde
 
@@ -180,30 +121,9 @@ class _DashedPageState extends State<DashedPage> {
         body: SafeArea(
             child: Column(
           children: [
-            TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search Here...',
-                  //Search Bar Prefix Icon
-                  prefixIcon: IconButton(
-                    color: Colors.white,
-                    icon: const Icon(Icons.downloading),
-                    onPressed: () {
-                    },
-                  ),
-
-                  //Search Bar Suffix icon
-                  suffixIcon: IconButton(
-                    color: Colors.yellow,
-                    icon: const Icon(Icons.local_fire_department_rounded),
-                    onPressed: () => _onPressed(context),
-                  ),
-                ),
-
-                //Search Bar Text Field Starts Here
-                textAlign: TextAlign.center,
-                controller: urlController,
-                keyboardType: TextInputType.url,
-                onSubmitted: (value) {
+            SearchBarPage(
+              controller: urlController,
+              onSubmitted: (value) {
                   switch (widget.index) {
                     case 0: // DuckDuckGo
                       webViewController?.loadUrl(
@@ -363,13 +283,10 @@ class _DashedPageState extends State<DashedPage> {
                         urlController.text = this.url;
                       });
                     },
-                    onDownloadStartRequest: (controller, request) {
-                      final url =
-                          request.url.toString(); // Convert the URL to a String
-                      setState(() {
-                        downloadUrl = url;
-                        updateDownloadButtonColor(true);
-                      });
+                    onDownloadStartRequest: (controller, urlRequest) async {
+                      final url = urlRequest.url.toString();
+                      final filename = url.substring(url.lastIndexOf('/') + 1);
+                      await downloadFile(url, filename);
                     }
 
 
@@ -378,7 +295,7 @@ class _DashedPageState extends State<DashedPage> {
                 progress < 1.0
                     ? LinearProgressIndicator(
                         value: progress,
-                        color: Colors.deepOrangeAccent,
+                        color: Colors.green.withOpacity(0.3),
                       )
                     : Container(),
               ],
@@ -388,15 +305,6 @@ class _DashedPageState extends State<DashedPage> {
         )),
 
         //ChatGPTCode1 can Safely Delete
-        floatingActionButton: showDownloadButton
-            ? FloatingActionButton(
-                backgroundColor: Colors.redAccent,
-                onPressed: isDownloadable ? _onDownloadPressed : null,
-                child: const Icon(
-                  Icons.download,
-                  color: Colors.white,
-                ))
-            : null,
 
         //ChatGPTCode1 can Safely Delete End
       ),
