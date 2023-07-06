@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nothing_browser/pages/dash.dart';
+import 'package:nothing_browser/pages/mainpage.dart';
 
 
 void main() {

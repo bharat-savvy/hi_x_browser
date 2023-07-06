@@ -5,22 +5,22 @@ import 'package:nothing_browser/parts/download_helper.dart';
 import 'package:nothing_browser/websitedetails/websitedata.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:nothing_browser/parts/duck_header.dart';
+import 'package:nothing_browser/parts/header.dart';
 
-class DuckDuckGoSearchPage extends StatefulWidget {
+class DuckDuckSearchPage extends StatefulWidget {
   final String query;
   final int index;
 
 
 
 
-  const DuckDuckGoSearchPage({Key? key, required this.query, required this.index}) : super(key: key);
+  const DuckDuckSearchPage({Key? key, required this.query, required this.index}) : super(key: key);
 
   @override
-  State<DuckDuckGoSearchPage> createState() => _DuckDuckGoSearchPageState();
+  State<DuckDuckSearchPage> createState() => _DuckDuckSearchPageState();
 }
 
-class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
+class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
   final GlobalKey webViewKey = GlobalKey();
 
 
@@ -157,7 +157,7 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
 
           body: Column(
             children: [
-              SearchBarPage(
+              HeaderPage(
                   controller: urlController,
 
                 onSubmitted: (value) {
@@ -167,7 +167,7 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DuckDuckGoSearchPage(query: value, index: widget.index),
+                        builder: (context) => DuckDuckSearchPage(query: widget.query, index: widget.index),
                       ),
                     );
                   } else {

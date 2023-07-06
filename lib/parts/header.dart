@@ -1,23 +1,26 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:nothing_browser/pages/dash.dart';
+import 'package:flutter/services.dart';
+import 'package:nothing_browser/pages/mainpage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:toastification/toastification.dart';
 
-class SearchBarPage extends StatefulWidget {
+class HeaderPage extends StatefulWidget {
   final TextEditingController controller;
   final ValueChanged<String> onSubmitted;
 
-  const SearchBarPage({super.key,
+  const HeaderPage({super.key,
     required this.controller,
     required this.onSubmitted,
   });
 
   @override
-  State<SearchBarPage> createState() => _SearchBarPageState();
+  State<HeaderPage> createState() => _HeaderPageState();
 }
 
 
-class _SearchBarPageState extends State<SearchBarPage> {
+class _HeaderPageState extends State<HeaderPage> {
   void _clearCache(BuildContext context) async {
     //store the navigator instance in a local variable
     final navigator = Navigator.of(context);
@@ -40,22 +43,55 @@ class _SearchBarPageState extends State<SearchBarPage> {
     );
   }
 
+  Color _getRandomColor() {
+    final random = Random();
+    return Color.fromRGBO(
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+      1,
+    );
+  }
+
+  Color _getContrastingIconColor(Color color) {
+    final luminance = (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
+    return luminance > 0.5 ? Colors.black : Colors.white;
+  }
+
+  void _setSystemUIOverlayStyle(Color statusBarColor) {
+    final brightness = ThemeData.estimateBrightnessForColor(statusBarColor);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: statusBarColor,
+      statusBarBrightness: brightness,
+      statusBarIconBrightness: brightness == Brightness.light ? Brightness.dark : Brightness.light,
+    ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final randomColor = _getRandomColor();
+    _setSystemUIOverlayStyle(randomColor);
+  }
 
 
   @override
   Widget build(BuildContext context) {
+    final randomColor = _getRandomColor();
+    final iconColor = _getContrastingIconColor(randomColor);
+
     return Column(
         children: [
           Container(
-            color: Colors.black,
+            color: _getRandomColor(),
             height: 45,
             padding: const EdgeInsets.all(5),
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.safety_check_outlined,
+                  icon: Icon(Icons.safety_check_outlined,
                   size: 22,
-                    color: Colors.lightGreen,
+                    color: iconColor,
                   ),
                   onPressed: (){
 
@@ -94,7 +130,7 @@ class _SearchBarPageState extends State<SearchBarPage> {
                   ),
                 ),
                 IconButton(
-                  color: Colors.red,
+                  color: iconColor,
                   icon: const Icon(Icons.block_flipped,
                     size: 22,
                   ),
@@ -102,7 +138,7 @@ class _SearchBarPageState extends State<SearchBarPage> {
                 ),
 
                 IconButton(
-                  color: Colors.yellow,
+                  color: iconColor,
                   icon: const Icon(Icons.local_fire_department_rounded,
                   ),
                   onPressed: () => _clearCache(context),

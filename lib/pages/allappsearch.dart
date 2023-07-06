@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:nothing_browser/parts/duck_header.dart';
+import 'package:nothing_browser/parts/header.dart';
 import 'package:nothing_browser/websitedetails/websitedata.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -9,19 +9,19 @@ import 'package:nothing_browser/parts/download_helper.dart';
 
 
 
-class DashedPage extends StatefulWidget {
+class AllAppSearchPage extends StatefulWidget {
   final int index;
 
 
 
 
-  const DashedPage({Key? key, required this.index}) : super(key: key);
+  const AllAppSearchPage({Key? key, required this.index}) : super(key: key);
 
   @override
-  State<DashedPage> createState() => _DashedPageState();
+  State<AllAppSearchPage> createState() => _AllAppSearchPageState();
 }
 
-class _DashedPageState extends State<DashedPage> {
+class _AllAppSearchPageState extends State<AllAppSearchPage> {
   final GlobalKey webViewKey = GlobalKey();
 
   //InAppWebView Settings//
@@ -127,7 +127,7 @@ class _DashedPageState extends State<DashedPage> {
         body: SafeArea(
             child: Column(
           children: [
-            SearchBarPage(
+            HeaderPage(
               controller: urlController,
               onSubmitted: (value) {
                   switch (widget.index) {
