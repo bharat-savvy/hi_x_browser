@@ -12,6 +12,9 @@ import 'package:nothing_browser/parts/download_helper.dart';
 class DashedPage extends StatefulWidget {
   final int index;
 
+
+
+
   const DashedPage({Key? key, required this.index}) : super(key: key);
 
   @override
@@ -49,6 +52,7 @@ class _DashedPageState extends State<DashedPage> {
   FlutterLocalNotificationsPlugin();
   List<String> webpages = [];
   List<String> webpages1 = [];
+  List<String> webpages2 = [];
 
   //scroll hidden implementation
 
@@ -67,6 +71,8 @@ class _DashedPageState extends State<DashedPage> {
 
     webpages = List.from(websiteData['webpages']!);
     webpages1 = List.from(websiteData['webpages1']!);
+    webpages2 = List.from(websiteData['webpages2']!);
+
 
     // Initialize the download button color
 
@@ -202,7 +208,6 @@ class _DashedPageState extends State<DashedPage> {
                         ),
                       );
                       break;
-
                     // and so on for the other cases
                   }
                 },

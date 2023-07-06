@@ -46,6 +46,7 @@ dependencies:
   http: ^0.13.6
   flutter_file_downloader: ^1.1.2
   flutter_local_notifications: ^15.0.0
+  adblocker_webview: ^0.1.2
 
 
 

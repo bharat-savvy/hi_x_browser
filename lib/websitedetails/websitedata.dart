@@ -23,6 +23,24 @@ const Map<String, List<String>> websiteData = {
     "https://www.wolframalpha.com/input?i",
     "https://search.aol.com/aol/search?q",
   ],
+
+  'webpages2': [
+    "https://duckduckgo.com/?q",
+    "https://www.google.com/search?q",
+    "https://www.bing.com/search?q",
+    "https://search.yahoo.com/search?q",
+    "https://yandex.com/search/touch/?text",
+    "https://startpage.com/search?q",
+    "https://www.ask.com/web?q",
+    "https://www.ecosia.com/search?method=index&q",
+    "https://www.wolframalpha.com/input?i",
+    "https://search.aol.com/aol/search?q",
+  ],
+
+
+
+
+
   'images': [
     'assets/images/duck.png',
     'assets/images/google.png',

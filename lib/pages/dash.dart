@@ -11,8 +11,6 @@ class DashboarddPage extends StatefulWidget {
 }
 
 class _DashboarddPageState extends State<DashboarddPage> {
-
-
   //for images
   List<String> images = [];
   @override
@@ -30,7 +28,10 @@ class _DashboarddPageState extends State<DashboarddPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DuckDuckGoSearchPage(query: query),
+        builder: (context) => DuckDuckGoSearchPage(
+          query: query,
+          index: 0,
+        ),
       ),
     );
   }
@@ -38,15 +39,9 @@ class _DashboarddPageState extends State<DashboarddPage> {
 
   //List of Images
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
-
-
-
       body: SafeArea(
         child: Center(
           child: Center(
@@ -144,8 +139,6 @@ class _DashboarddPageState extends State<DashboarddPage> {
           ),
         ),
       ),
-
-
     );
   }
 }

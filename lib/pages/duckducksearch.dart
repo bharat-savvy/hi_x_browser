@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:nothing_browser/parts/download_helper.dart';
+import 'package:nothing_browser/websitedetails/websitedata.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nothing_browser/parts/duck_header.dart';
 
-
 class DuckDuckGoSearchPage extends StatefulWidget {
   final String query;
+  final int index;
 
-  const DuckDuckGoSearchPage({Key? key, required this.query}) : super(key: key);
+
+
+
+  const DuckDuckGoSearchPage({Key? key, required this.query, required this.index}) : super(key: key);
 
   @override
   State<DuckDuckGoSearchPage> createState() => _DuckDuckGoSearchPageState();
@@ -18,6 +22,10 @@ class DuckDuckGoSearchPage extends StatefulWidget {
 
 class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
   final GlobalKey webViewKey = GlobalKey();
+
+
+
+  //AdBlocking Ends Here
 
   //InAppWebView Settings//
   InAppWebViewController? webViewController;
@@ -34,6 +42,9 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
     supportZoom: true,
     supportMultipleWindows: true,
     allowFileAccess: true,
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+
+
   );
 
 //Refresh Page Circuler Progress bar
@@ -41,13 +52,22 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
   String url = "";
   double progress = 0;
   final urlController = TextEditingController();
+  List<String> windows = []; // List to store window URLs
+
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
+      List<String> webpages1 = [];
+
+
 
   @override
   void initState() {
     super.initState();
+
+
+
+
 
     pullToRefreshController = kIsWeb
         ? null
@@ -58,15 +78,25 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
               webViewController?.reload();
             });
 
+    // If the query is a URL, load it directly
+    if (widget.query.startsWith('http://') || widget.query.startsWith('https://')) {
+      url = widget.query;
+    } else {
+      url = 'https://duckduckgo.com/?q=${widget.query}';
+    }
+
     // Initialize the webview
+    webpages1 = List.from(websiteData['webpages1']!);
+
     // Initialize the local notification plugin
     var initializationSettingsAndroid =
-    const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid);
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
 
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
+
   Future<void> downloadFile(String url, String filename) async {
     await DownloadHelper.downloadFile(url, filename, (fileName, progress) {
       showDownloadNotification(fileName, progress.toInt());
@@ -77,8 +107,34 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
     await NotificationHelper.showDownloadNotification(fileName, progress);
   }
 
+  Future<void> launchGooglePlayLink(String packageName) async {
+    var uri = Uri.parse('market://details?id=$packageName');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch Google Play link';
+    }
+  }
 
 
+  Future<void> openWhatsAppProductCatalogPrime(String phoneNumber) async {
+    var uri = Uri.parse('whatsapp://catalog/?phoneNumber=$phoneNumber');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch Whatsapp';
+    }
+  }
+
+
+  Future<void> openWhatsApp(String mobileNumber) async {
+    var uri = Uri.parse('whatsapp://send/?phone=$mobileNumber');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch Whatsapp';
+    }
+  }
 
 
   @override
@@ -98,16 +154,34 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
       //Backpress Ends
       child: SafeArea(
         child: Scaffold(
+
           body: Column(
             children: [
               SearchBarPage(
                   controller: urlController,
-              onSubmitted: (value) {
-                webViewController?.loadUrl(
-                    urlRequest: URLRequest(url: WebUri(searchUrl)));
-              }
-              ),
 
+                onSubmitted: (value) {
+                  if (value.startsWith('http://') || value.startsWith('https://')) {
+                    // If the entered value starts with 'http://' or 'https://',
+                    // treat it as a URL and open it in DuckDuckGoSearchPage
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DuckDuckGoSearchPage(query: value, index: widget.index),
+                      ),
+                    );
+                  } else {
+                    // Otherwise, treat it as a search query and perform the search
+                    String searchUrl = '${webpages1[widget.index]}=$value';
+                    webViewController?.loadUrl(
+                      urlRequest: URLRequest(
+                        url: WebUri(searchUrl),
+                      ),
+                    );
+                  }
+                },
+
+              ),
 
               //Search Bar Text Field End Here
               Expanded(
@@ -115,7 +189,6 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                   InAppWebView(
                     key: webViewKey,
                     initialUrlRequest: URLRequest(url: WebUri(searchUrl)),
-                    initialSettings: settings,
                     pullToRefreshController: pullToRefreshController,
                     onWebViewCreated: (InAppWebViewController controller) {
                       webViewController = controller;
@@ -131,9 +204,9 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                           resources: request.resources,
                           action: PermissionResponseAction.GRANT);
                     },
-                    shouldOverrideUrlLoading:
-                        (controller, navigationAction) async {
+                    shouldOverrideUrlLoading: (controller, navigationAction) async {
                       var uri = navigationAction.request.url!;
+
                       if (![
                         "http",
                         "https",
@@ -143,15 +216,45 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                         "javascript",
                         "about"
                       ].contains(uri.scheme)) {
-                        if (await canLaunchUrl(uri)) {
-                          await launchUrl(
-                            uri,
-                          );
-                          return NavigationActionPolicy.CANCEL;
+                        if (uri.scheme == 'market') {
+                          // Handle Google Play app links
+                          var packageName = uri.queryParameters['id'];
+                          if (packageName != null) {
+                            launchGooglePlayLink(packageName);
+                            return NavigationActionPolicy.CANCEL;
+                          }
+                        }
+
+                        else if (uri.scheme == 'whatsapp') {
+                          // Handle WhatsApp product catalog links
+                          var phoneNumber = uri.queryParameters['phoneNumber'];
+                          if (phoneNumber != null) {
+                            openWhatsAppProductCatalogPrime(phoneNumber);
+                            return NavigationActionPolicy.CANCEL;
+                          }
+                        }
+
+
+                        else if (uri.scheme == 'whatsapp') {
+                          // Handle WhatsApp product catalog links
+                          var niyaz = uri.queryParameters['mobileNumber'];
+                          if (niyaz != null) {
+                            openWhatsApp(niyaz);
+                            return NavigationActionPolicy.CANCEL;
+                          }
+                        }
+
+
+                        else {
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri);
+                            return NavigationActionPolicy.CANCEL;
+                          }
                         }
                       }
                       return NavigationActionPolicy.ALLOW;
                     },
+
                     onLoadStop: (controller, url) async {
                       pullToRefreshController?.endRefreshing();
                       setState(() {
@@ -186,6 +289,19 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
                       await downloadFile(url, filename);
                     },
 
+                    onCreateWindow: (controller, createWindowRequest) async {
+                      await controller.loadUrl(
+                        urlRequest: URLRequest(
+                          url: createWindowRequest.request.url,
+                          headers: {},
+                        ),
+                      );
+                      return true;
+                    },
+
+
+
+
                     //Download Logic Ends Here
                   ),
                   progress < 1.0
@@ -198,37 +314,11 @@ class _DuckDuckGoSearchPageState extends State<DuckDuckGoSearchPage> {
               ),
             ],
           ),
-          bottomNavigationBar: BottomAppBar(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () async {
-                    if (await webViewController!.canGoBack()) {
-                      webViewController!.goBack();
-                    }
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: () {
-                    webViewController?.reload();
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: () async {
-                    if (await webViewController!.canGoForward()) {
-                      webViewController!.goForward();
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
+
         ),
       ),
     );
   }
 }
+
+

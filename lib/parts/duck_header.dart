@@ -54,7 +54,7 @@ class _SearchBarPageState extends State<SearchBarPage> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.safety_check_outlined,
-                  size: 20,
+                  size: 22,
                     color: Colors.lightGreen,
                   ),
                   onPressed: (){
@@ -94,14 +94,17 @@ class _SearchBarPageState extends State<SearchBarPage> {
                   ),
                 ),
                 IconButton(
-                  color: Colors.yellow,
-                  icon: const Icon(Icons.add),
+                  color: Colors.red,
+                  icon: const Icon(Icons.block_flipped,
+                    size: 22,
+                  ),
                   onPressed: () {},
                 ),
 
                 IconButton(
                   color: Colors.yellow,
-                  icon: const Icon(Icons.local_fire_department_rounded),
+                  icon: const Icon(Icons.local_fire_department_rounded,
+                  ),
                   onPressed: () => _clearCache(context),
                 ),
               ],
