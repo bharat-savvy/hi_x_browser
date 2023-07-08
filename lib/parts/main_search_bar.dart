@@ -33,51 +33,71 @@ class MainSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(25.0),
-      child: TextField(
-        controller: searchController,
-        style: TextStyle(color: Colors.white.withOpacity(0.8)),
-        decoration: InputDecoration(
-          hintText: 'I Love You ❤...',
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-          prefixIcon: IconButton(
-            color: Colors.white,
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              final query = searchController.text.trim();
-              if (query.isNotEmpty) {
-                if (isURL(query)) {
-                  // If the query is a valid URL, open it in DuckDuckGoSearchPage
-                  navigateToSearchPage(context, query);
-                } else {
-                  // Otherwise, perform a search
-                  navigateToSearchPage(context, query);
-                }
-              }
-            },
+      width: 315,
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 0.1,
+            blurRadius: 2,
+            offset: const Offset(0, 0), // changes the position of the shadow
           ),
-          filled: true,
-          fillColor: Colors.blueGrey.withOpacity(0.3),
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 10.0,
-            horizontal: 16.0,
-          ),
+        ],
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Card(
+        elevation: 0, // Adjust the elevation here
+        shadowColor: Colors.grey, // Adjust the shadow color here
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
         ),
-        onSubmitted: (query) {
-          if (query.isNotEmpty) {
-            if (isURL(query)) {
-              // If the query is a valid URL, open it in DuckDuckGoSearchPage
-              navigateToSearchPage(context, query);
-            } else {
-              // Otherwise, perform a search
-              navigateToSearchPage(context, query);
+
+
+        child: TextField(
+          controller: searchController,
+          style: const TextStyle(color: Colors.black54),
+          decoration: InputDecoration(
+            hintText: 'I love someone...',
+            hintStyle: const TextStyle(color: Colors.black54),
+            prefixIcon: IconButton(
+              color: Colors.black54,
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                final query = searchController.text.trim();
+                if (query.isNotEmpty) {
+                  if (isURL(query)) {
+                    // If the query is a valid URL, open it in DuckDuckGoSearchPage
+                    navigateToSearchPage(context, query);
+                  } else {
+                    // Otherwise, perform a search
+                    navigateToSearchPage(context, query);
+                  }
+                }
+              },
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 10.0,
+              horizontal: 16.0,
+            ),
+          ),
+          onSubmitted: (query) {
+            if (query.isNotEmpty) {
+              if (isURL(query)) {
+                // If the query is a valid URL, open it in DuckDuckGoSearchPage
+                navigateToSearchPage(context, query);
+              } else {
+                // Otherwise, perform a search
+                navigateToSearchPage(context, query);
+              }
             }
-          }
-        },
+          },
+        ),
       ),
     );
   }

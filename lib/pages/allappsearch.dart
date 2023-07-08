@@ -7,13 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nothing_browser/parts/download_helper.dart';
 
-
-
 class AllAppSearchPage extends StatefulWidget {
   final int index;
-
-
-
 
   const AllAppSearchPage({Key? key, required this.index}) : super(key: key);
 
@@ -46,15 +41,12 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
   String url = "";
   double progress = 0;
   final urlController = TextEditingController();
-  String? downloadUrl; // Stores the download URL //ChatGPTCode1
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
-  List<String> webpages = [];
-  List<String> webpages1 = [];
-  List<String> webpages2 = [];
-
-  //scroll hidden implementation
+  List<String> webpages = websiteData['webpages']!;
+  List<String> webpages1 = websiteData['webpages1']!;
+  List<String> webpages2 = websiteData['webpages2']!;
 
   @override
   void initState() {
@@ -63,18 +55,13 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
-            settings: PullToRefreshSettings(color: Colors.green.withOpacity(0.5)),
-            onRefresh: () async {
-              defaultTargetPlatform == TargetPlatform.android;
-              webViewController?.reload();
-            });
-
-    webpages = List.from(websiteData['webpages']!);
-    webpages1 = List.from(websiteData['webpages1']!);
-    webpages2 = List.from(websiteData['webpages2']!);
-
-
-    // Initialize the download button color
+      settings: PullToRefreshSettings(color: Colors.green.withOpacity(0.5)),
+      onRefresh: () async {
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          webViewController?.reload();
+        }
+      },
+    );
 
     var initializationSettingsAndroid =
     const AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -83,7 +70,6 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
 
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
-
 
   Future<void> downloadFile(String url, String filename) async {
     await DownloadHelper.downloadFile(url, filename, (fileName, progress) {
@@ -95,23 +81,9 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
     await NotificationHelper.showDownloadNotification(fileName, progress);
   }
 
-  //ChatGPTCode12
-
-
-
-    //ToastNotification Ends Here
-
-
-  // A list of webpages to load for each button
-
-  //ChatGPT Download COde
-
-  //ChatGPT COde End
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      //Backpress Starts
       onWillPop: () async {
         if (await webViewController!.canGoBack()) {
           webViewController!.goBack();
@@ -120,198 +92,111 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
           return true;
         }
       },
-
-      //Backpress Ends
-
       child: Scaffold(
         body: SafeArea(
-            child: Column(
-          children: [
-            HeaderPage(
-              controller: urlController,
-              onSubmitted: (value) {
-                  switch (widget.index) {
-                    case 0: // DuckDuckGo
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[0]}=$value"),
-                        ),
-                      );
-                      break;
-                    case 1: // Google
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[1]}=$value"),
-                        ),
-                      );
-                      break;
-                    case 2: // Bing
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[2]}=$value"),
-                        ),
-                      );
-                      break;
-
-                    case 3: // Yahoo
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[3]}=$value"),
-                        ),
-                      );
-                      break;
-
-                    case 4: // Yandex
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[4]}=$value"),
-                        ),
-                      );
-                      break;
-
-                    case 5: // StartPage
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[5]}=$value"),
-                        ),
-                      );
-                      break;
-
-                    case 6: // Ask
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[6]}=$value"),
-                        ),
-                      );
-                      break;
-
-                    case 7: // Ecosia
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[7]}=$value"),
-                        ),
-                      );
-                      break;
-
-                    case 8: // WolFarm
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[8]}=$value"),
-                        ),
-                      );
-                      break;
-
-                    case 9: // Aol
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri("${webpages1[9]}=$value"),
-                        ),
-                      );
-                      break;
-                    // and so on for the other cases
+          child: Column(
+            children: [
+              HeaderPage(
+                controller: urlController,
+                onSubmitted: (value) {
+                  final index = widget.index;
+                  if (index >= 0 && index < webpages1.length) {
+                    webViewController?.loadUrl(
+                      urlRequest: URLRequest(
+                        url: WebUri("${webpages1[index]}=$value"),
+                      ),
+                    );
                   }
                 },
               ),
 
-
-            //Search Bar Text Field End Here
-
-            //Body Starts Here
-            Expanded(
+              Expanded(
                 child: Stack(
-              children: [
-                InAppWebView(
-                    key: webViewKey,
-                    initialUrlRequest:
-                        URLRequest(url: WebUri(webpages[widget.index])),
-                    initialSettings: settings,
-                    pullToRefreshController: pullToRefreshController,
-                    onWebViewCreated: (InAppWebViewController controller) {
-                      webViewController = controller;
-                    },
-                    onLoadStart: (controller, url) {
-                      setState(() {
-                        this.url = url.toString();
-                        urlController.text = this.url;
-                      });
-                    },
-                    onPermissionRequest: (controller, request) async {
-                      return PermissionResponse(
-                          resources: request.resources,
-                          action: PermissionResponseAction.GRANT);
-                    },
-                    shouldOverrideUrlLoading:
-                        (controller, navigationAction) async {
-                      var uri = navigationAction.request.url!;
-
-                      if (![
-                        "http",
-                        "https",
-                        "file",
-                        "chrome",
-                        "data",
-                        "javascript",
-                        "about"
-                      ].contains(uri.scheme)) {
-                        if (await canLaunchUrl(uri)) {
-                          await launchUrl(
-                            uri,
+                  children: [
+                    Hero(
+                      tag: 'image${widget.index}',
+                      child: InAppWebView(
+                        key: webViewKey,
+                        initialUrlRequest: URLRequest(url: WebUri(webpages[widget.index])),
+                        initialSettings: settings,
+                        pullToRefreshController: pullToRefreshController,
+                        onWebViewCreated: (InAppWebViewController controller) {
+                          webViewController = controller;
+                        },
+                        onLoadStart: (controller, url) {
+                          setState(() {
+                            this.url = url.toString();
+                            urlController.text = this.url;
+                          });
+                        },
+                        onPermissionRequest: (controller, request) async {
+                          return PermissionResponse(
+                            resources: request.resources,
+                            action: PermissionResponseAction.GRANT,
                           );
-
-                          return NavigationActionPolicy.CANCEL;
-                        }
-                      }
-                      return NavigationActionPolicy.ALLOW;
-                    },
-                    onLoadStop: (controller, url) async {
-                      pullToRefreshController?.endRefreshing();
-                      setState(() {
-                        this.url = url.toString();
-                        urlController.text = this.url;
-                      });
-                    },
-                    onReceivedError: (controller, request, error) {
-                      pullToRefreshController?.endRefreshing();
-                    },
-                    onProgressChanged: (controller, progress) {
-                      if (progress == 100) {
-                        pullToRefreshController?.endRefreshing();
-                      }
-                      setState(() {
-                        this.progress = progress / 100;
-                        urlController.text = url;
-                      });
-                    },
-                    onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                      setState(() {
-                        this.url = url.toString();
-                        urlController.text = this.url;
-                      });
-                    },
-                    onDownloadStartRequest: (controller, urlRequest) async {
-                      final url = urlRequest.url.toString();
-                      final filename = url.substring(url.lastIndexOf('/') + 1);
-                      await downloadFile(url, filename);
-                    }
-
-
-
+                        },
+                        shouldOverrideUrlLoading: (controller, navigationAction) async {
+                          var uri = navigationAction.request.url!;
+                          if (![
+                            "http",
+                            "https",
+                            "file",
+                            "chrome",
+                            "data",
+                            "javascript",
+                            "about"
+                          ].contains(uri.scheme)) {
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(uri);
+                              return NavigationActionPolicy.CANCEL;
+                            }
+                          }
+                          return NavigationActionPolicy.ALLOW;
+                        },
+                        onLoadStop: (controller, url) async {
+                          pullToRefreshController?.endRefreshing();
+                          setState(() {
+                            this.url = url.toString();
+                            urlController.text = this.url;
+                          });
+                        },
+                        onReceivedError: (controller, request, error) {
+                          pullToRefreshController?.endRefreshing();
+                        },
+                        onProgressChanged: (controller, progress) {
+                          if (progress == 100) {
+                            pullToRefreshController?.endRefreshing();
+                          }
+                          setState(() {
+                            this.progress = progress / 100;
+                            urlController.text = url;
+                          });
+                        },
+                        onUpdateVisitedHistory: (controller, url, androidIsReload) {
+                          setState(() {
+                            this.url = url.toString();
+                            urlController.text = this.url;
+                          });
+                        },
+                        onDownloadStartRequest: (controller, urlRequest) async {
+                          final url = urlRequest.url.toString();
+                          final filename = url.substring(url.lastIndexOf('/') + 1);
+                          await downloadFile(url, filename);
+                        },
+                      ),
                     ),
-                progress < 1.0
-                    ? LinearProgressIndicator(
-                        value: progress,
-                        color: Colors.green.withOpacity(0.3),
-                      )
-                    : Container(),
-              ],
-            ))
-            //Body Ends Here
-          ],
-        )),
-
-        //ChatGPTCode1 can Safely Delete
-
-        //ChatGPTCode1 can Safely Delete End
+                    progress < 1.0
+                        ? LinearProgressIndicator(
+                      value: progress,
+                      color: Colors.green.withOpacity(0.3),
+                    )
+                        : Container(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
