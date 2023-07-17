@@ -56,7 +56,7 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
-      settings: PullToRefreshSettings(color: Colors.deepOrangeAccent),
+      settings: PullToRefreshSettings(color: Colors.green.withOpacity(0.3)),
       onRefresh: () async {
         if (defaultTargetPlatform == TargetPlatform.android) {
           webViewController?.reload();
@@ -64,9 +64,10 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
       },
     );
 
-    if (widget.query.startsWith('http://') || widget.query.startsWith('https://')) {
+    if (Uri.tryParse(widget.query)?.hasScheme == true) {
       url = widget.query;
     } else {
+      // If query is not a URL, perform DuckDuckGo search
       url = 'https://duckduckgo.com/?q=${widget.query}';
     }
 
@@ -115,9 +116,12 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
     }
   }
 
+  void refreshWebView() {
+    webViewController!.reload();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final searchUrl = 'https://duckduckgo.com/?q=${widget.query}';
     return WillPopScope(
       onWillPop: () async {
         if (await webViewController!.canGoBack()) {
@@ -153,14 +157,14 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
                       ),
                     );
                   }
-                },
+                }, onRefresh: refreshWebView,
               ),
               Expanded(
                 child: Stack(
                   children: [
                     InAppWebView(
                       key: webViewKey,
-                      initialUrlRequest: URLRequest(url: WebUri(searchUrl)),
+                      initialUrlRequest: URLRequest(url: WebUri(url)),
                       pullToRefreshController: pullToRefreshController,
                       onWebViewCreated: (InAppWebViewController controller) {
                         webViewController = controller;
@@ -253,7 +257,7 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
                     progress < 1.0
                         ? LinearProgressIndicator(
                       value: progress,
-                      color: Colors.deepOrangeAccent,
+                      color: Colors.green.withOpacity(0.3),
                     )
                         : Container(),
                   ],

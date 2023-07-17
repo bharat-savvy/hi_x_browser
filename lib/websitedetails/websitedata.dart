@@ -41,16 +41,16 @@ const Map<String, List<String>> websiteData = {
 
 
 
-  'images': [
-    'assets/images/duck.png',
-    'assets/images/google.png',
-    'assets/images/bing.png',
-    'assets/images/yahoo.png',
-    'assets/images/yandex.png',
-    'assets/images/start.png',
-    'assets/images/ask.png',
-    'assets/images/ecosia.png',
-    'assets/images/wolfarm.png',
-    'assets/images/aol.png',
+  'imagesUrls': [
+    'gs://nothing-browser.appspot.com/duck.png',
+    'gs://nothing-browser.appspot.com/google.png',
+    'gs://nothing-browser.appspot.com/bing.png',
+    'gs://nothing-browser.appspot.com/yahoo.png',
+    'gs://nothing-browser.appspot.com/yandex.png',
+    'gs://nothing-browser.appspot.com/start.png',
+    'gs://nothing-browser.appspot.com/ask.png',
+    'gs://nothing-browser.appspot.com/ecosia.png',
+    'gs://nothing-browser.appspot.com/wolfarm.png',
+    'gs://nothing-browser.appspot.com/aol.png'
   ]
 };

@@ -19,7 +19,7 @@ class AllAppSearchPage extends StatefulWidget {
 class _AllAppSearchPageState extends State<AllAppSearchPage> {
   final GlobalKey webViewKey = GlobalKey();
 
-  //InAppWebView Settings//
+  // InAppWebView Settings
   InAppWebViewController? webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
     useShouldOverrideUrlLoading: true,
@@ -36,7 +36,7 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
     allowFileAccess: true,
   );
 
-  //Refresh Page Circule432r Progress bar
+  // Refresh Page Circle Progress bar
   PullToRefreshController? pullToRefreshController;
   String url = "";
   double progress = 0;
@@ -81,6 +81,17 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
     await NotificationHelper.showDownloadNotification(fileName, progress);
   }
 
+  void refreshWebView() {
+    webViewController!.reload();
+  }
+
+  @override
+  void dispose() {
+    pullToRefreshController?.dispose();
+    webViewController?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -93,9 +104,13 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
         }
       },
       child: Scaffold(
+
         body: SafeArea(
           child: Column(
             children: [
+
+
+
               HeaderPage(
                 controller: urlController,
                 onSubmitted: (value) {
@@ -108,8 +123,8 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
                     );
                   }
                 },
+                onRefresh: refreshWebView,
               ),
-
               Expanded(
                 child: Stack(
                   children: [
@@ -185,12 +200,11 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
                         },
                       ),
                     ),
-                    progress < 1.0
-                        ? LinearProgressIndicator(
-                      value: progress,
-                      color: Colors.green.withOpacity(0.3),
-                    )
-                        : Container(),
+                    if (progress < 1.0)
+                      LinearProgressIndicator(
+                        value: progress,
+                        color: Colors.green.withOpacity(0.3),
+                      ),
                   ],
                 ),
               ),

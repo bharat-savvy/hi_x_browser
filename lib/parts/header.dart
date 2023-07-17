@@ -1,18 +1,26 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:nothing_browser/initialpages/appcolors.dart';
+import 'package:nothing_browser/parts/theme_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 import 'package:nothing_browser/pages/mainpage.dart';
+
+
+
+
+
 
 class HeaderPage extends StatefulWidget {
   final TextEditingController controller;
   final ValueChanged<String> onSubmitted;
+  final VoidCallback onRefresh; // Callback function for refresh action
+
 
   const HeaderPage({
     Key? key,
     required this.controller,
-    required this.onSubmitted,
+    required this.onSubmitted, required this.onRefresh,
   }) : super(key: key);
 
   @override
@@ -20,38 +28,13 @@ class HeaderPage extends StatefulWidget {
 }
 
 class _HeaderPageState extends State<HeaderPage> {
-  Color _headerColor = Colors.transparent;
-  final random = Random();
-  final maxRGB = 25;
 
-  Color _getRandomColor() {
-    return Color.fromRGBO(
-      random.nextInt(maxRGB),
-      random.nextInt(maxRGB),
-      random.nextInt(maxRGB),
-      1,
-    );
-  }
-
-  Color _getContrastingIconColor(Color color) {
-    final luminance = (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
-    return luminance > 0.5 ? Colors.black : Colors.white;
-  }
-
-  void _setSystemUIOverlayStyle(Color statusBarColor) {
-    final brightness = ThemeData.estimateBrightnessForColor(statusBarColor);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: statusBarColor,
-      statusBarBrightness: brightness,
-      statusBarIconBrightness: brightness == Brightness.light ? Brightness.dark : Brightness.light,
-    ));
-  }
+  late ThemeProvider themeProvider;
 
   @override
-  void initState() {
-    super.initState();
-    _headerColor = _getRandomColor();
-    _setSystemUIOverlayStyle(_headerColor);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    themeProvider = Provider.of<ThemeProvider>(context);
   }
 
   void _clearCache(BuildContext context) async {
@@ -62,53 +45,69 @@ class _HeaderPageState extends State<HeaderPage> {
           (route) => false,
     );
 
+    final themeMode = themeProvider.themeMode;
+    final backgroundColor = themeMode == ThemeMode.light ? AppColors.firefoxPurple : AppColors.lightBlue;
+    final foregroundColor = themeMode == ThemeMode.light ? AppColors.lightGray : AppColors.firefoxPurple;
+
+
     toastification.show(
       context: context,
       title: 'Everything Cleared',
       autoCloseDuration: const Duration(seconds: 3),
-      icon: const Icon(Icons.local_fire_department_rounded, color: Colors.yellow),
-      backgroundColor: _headerColor,
-      foregroundColor: Colors.white,
+      icon: const Icon(Icons.local_fire_department_rounded,
+      color: Colors.red),
+      backgroundColor: backgroundColor,
+      foregroundColor: foregroundColor,
     );
+
+
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final randomColor = _getRandomColor();
-    final iconColor = _getContrastingIconColor(randomColor);
-    _setSystemUIOverlayStyle(_headerColor);
+    final themeMode = themeProvider.themeMode;
+
 
     final headerContainer = Material(
       elevation: 4,
       child: Container(
-        color: _headerColor,
+        color: themeMode == ThemeMode.light ? AppColors.lightBlue : AppColors.firefoxPurple, // Set the color based on the theme mode
         height: 45,
         padding: const EdgeInsets.all(5),
         child: Row(
           children: [
             IconButton(
-              icon: Icon(
-                Icons.safety_check_outlined,
-                size: 22,
-                color: iconColor,
+              icon: const Icon(
+                  Icons.refresh
               ),
-              onPressed: () {},
+
+              onPressed: widget.onRefresh, // Call the onRefresh callback
+
+
+
             ),
+
+
+
+
+
             Expanded(
               child: Card(
                 elevation: 3,
                 child: TextField(
                   decoration: InputDecoration(
+
                     contentPadding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 5.0),
                     filled: true,
-                    fillColor: Colors.blueGrey.withOpacity(0.3),
+                    fillColor: AppColors.lightBlue,
                     hintText: 'Search Here....',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[400],
+                    hintStyle: const TextStyle(
+                      color: AppColors.firefoxPurple,
                       fontSize: 12.0,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(3.0),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -117,14 +116,20 @@ class _HeaderPageState extends State<HeaderPage> {
                   keyboardType: TextInputType.url,
                   style: const TextStyle(
                     fontSize: 12.0,
+                    color: AppColors.firefoxPurple,
                   ),
                   onSubmitted: widget.onSubmitted,
                 ),
               ),
             ),
 
+
+
+
+
+
             IconButton(
-              color: Colors.yellow,
+              color: themeMode == ThemeMode.light ? Colors.red : Colors.yellow, // Set the color based on the theme mode
               icon: const Icon(
                 Icons.local_fire_department_rounded,
               ),

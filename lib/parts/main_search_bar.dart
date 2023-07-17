@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:nothing_browser/pages/duckducksearch.dart';
 
-class MainSearchBar extends StatelessWidget {
+class MainSearchBar extends StatefulWidget {
   final TextEditingController searchController;
   final Function(String) onSearch;
 
@@ -11,23 +12,40 @@ class MainSearchBar extends StatelessWidget {
     required this.onSearch,
   }) : super(key: key);
 
-  void navigateToSearchPage(BuildContext context, String query) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DuckDuckSearchPage(
-          query: query,
-          index: 0,
-        ),
-      ),
-    );
-  }
+  @override
+  State<MainSearchBar> createState() => _MainSearchBarState();
+}
 
-  bool isURL(String text) {
-    const pattern =
-        r'^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$';
-    final regExp = RegExp(pattern, caseSensitive: false);
-    return regExp.hasMatch(text);
+class _MainSearchBarState extends State<MainSearchBar> {
+  final DatabaseReference databaseReference =
+  FirebaseDatabase.instance.ref();
+
+  String dynamicHintText = 'Search or Enter URL';
+
+  void navigateToSearchPage(BuildContext context, String query) {
+    if (Uri.tryParse(query)?.hasScheme == true) {
+      // If query is a valid URL, navigate to DuckDuckSearchPage directly
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DuckDuckSearchPage(
+            query: query,
+            index: 0,
+          ),
+        ),
+      );
+    } else {
+      // If query is not a URL, navigate to DuckDuckSearchPage with search query
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DuckDuckSearchPage(
+            query: 'https://duckduckgo.com/?q=$query',
+            index: 0,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -38,41 +56,31 @@ class MainSearchBar extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 0.1,
-            blurRadius: 2,
-            offset: const Offset(0, 0), // changes the position of the shadow
           ),
         ],
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Card(
-        elevation: 0, // Adjust the elevation here
-        shadowColor: Colors.grey, // Adjust the shadow color here
+        elevation: 0,
+        shadowColor: Colors.grey,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-
-
         child: TextField(
-          controller: searchController,
+          controller: widget.searchController,
           style: const TextStyle(color: Colors.black54),
           decoration: InputDecoration(
-            hintText: 'I love someone...',
-            hintStyle: const TextStyle(color: Colors.black54),
-            prefixIcon: IconButton(
+            hintText: dynamicHintText,
+            hintStyle: const TextStyle(
               color: Colors.black54,
-              icon: const Icon(Icons.search),
+              fontSize: 12,
+            ),
+            suffixIcon: IconButton(
+              color: Colors.black54,
+              icon: const Icon(Icons.search_sharp),
               onPressed: () {
-                final query = searchController.text.trim();
-                if (query.isNotEmpty) {
-                  if (isURL(query)) {
-                    // If the query is a valid URL, open it in DuckDuckGoSearchPage
-                    navigateToSearchPage(context, query);
-                  } else {
-                    // Otherwise, perform a search
-                    navigateToSearchPage(context, query);
-                  }
-                }
+                final query = widget.searchController.text.trim();
+                navigateToSearchPage(context, query);
               },
             ),
             filled: true,
@@ -88,13 +96,7 @@ class MainSearchBar extends StatelessWidget {
           ),
           onSubmitted: (query) {
             if (query.isNotEmpty) {
-              if (isURL(query)) {
-                // If the query is a valid URL, open it in DuckDuckGoSearchPage
-                navigateToSearchPage(context, query);
-              } else {
-                // Otherwise, perform a search
-                navigateToSearchPage(context, query);
-              }
+              navigateToSearchPage(context, query);
             }
           },
         ),

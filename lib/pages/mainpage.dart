@@ -1,11 +1,13 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:nothing_browser/initialpages/appcolors.dart';
 import 'package:nothing_browser/pages/duckducksearch.dart';
 import 'package:nothing_browser/pages/allappsearch.dart';
 import 'package:nothing_browser/parts/main_search_bar.dart';
+import 'package:nothing_browser/parts/quotecontainer.dart';
+import 'package:nothing_browser/parts/thememodeswitch.dart';
+import 'package:page_transition/page_transition.dart';
 import '../websitedetails/websitedata.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class DashboarddPage extends StatefulWidget {
   const DashboarddPage({Key? key}) : super(key: key);
@@ -16,99 +18,142 @@ class DashboarddPage extends StatefulWidget {
 
 class _DashboarddPageState extends State<DashboarddPage> {
   //for images
-  List<String> images = [];
+  List<String> imagesUrls = [];
 
   @override
   void initState() {
     super.initState();
-    images = List.from(websiteData['images']!);
-  }
-  Color _getRandomColor() {
-    final random = Random();
-    return Color.fromARGB(
-      25,
-      random.nextInt(256),
-      random.nextInt(256),
-      random.nextInt(256),
-    );
+    fetchImages();
   }
 
+  Future<void> fetchImages() async {
+    try {
+      final List<firebase_storage.Reference> imageRefs =
+          websiteData['imagesUrls']!.map((imageUrl) {
+        return firebase_storage.FirebaseStorage.instance.refFromURL(imageUrl);
+      }).toList();
 
+      final List<String> downloadUrls = await Future.wait(
+        imageRefs.map((imageRef) => imageRef.getDownloadURL()).toList(),
+      );
+
+      setState(() {
+        imagesUrls = downloadUrls;
+      });
+    } catch (e) {
+      // Handle any errors
+      print('Error fetching images: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: _getRandomColor(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const ThemeModeSwitch(),
 
 
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Main Search Bar Design Starts Here
-              MainSearchBar(
-                searchController: TextEditingController(),
-                onSearch: (query) {
-                  if (query.isNotEmpty) {
-                    navigateToSearchPage(context, query);
-                  }
+            Image.asset(
+              'assets/images/LogoFinal.png',
+              height: 70,
+            ),
+            const SizedBox(height: 5,),
+            const Text('Hi xBrowser: Fast & Private',
+            style: TextStyle(
+              fontSize: 15
+            ),
+            ),
+
+            const SizedBox(
+              height: 50,
+            ),
+
+            // Main Search Bar Design Starts Here
+            MainSearchBar(
+              searchController: TextEditingController(),
+              onSearch: (query) {
+                if (query.isNotEmpty) {
+                  navigateToSearchPage(context, query);
+                }
+              },
+            ),
+            // Main Search Bar Design Ends Here
+
+            const SizedBox(
+              height: 5,
+            ),
+
+            // Search Engine Items Starts Here
+            Container(
+              margin: const EdgeInsets.all(25),
+              height: 200,
+              color: Colors.transparent,
+              child: GridView.builder(
+                itemCount: imagesUrls.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5, // number of items per row
+                  crossAxisSpacing: 20, // horizontal spacing between the items
+                  mainAxisSpacing: 20, // vertical spacing between the items
+                  childAspectRatio: 1, // control the aspect ratio of grid items
+                ),
+                itemBuilder: (BuildContext context, int index) {
+                  final imageUrl = imagesUrls[index];
+                  return FutureBuilder(
+                    future: precacheImage(
+                      NetworkImage(imageUrl),
+                      context,
+                    ),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        // Display a circular progress indicator while the image is loading
+                        return const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth:
+                                  2, // Adjust the thickness of the progress indicator
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.deepDarkPurple),
+                            ));
+                      }
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot.error == null) {
+                        // The image has finished loading, display it
+                        return InkWell(
+                          onTap: () {
+                            navigateToNextPage(context, index);
+                          },
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      } else {
+                        // Error occurred while loading the image
+                        return const Icon(Icons.error);
+                      }
+                    },
+                  );
                 },
               ),
-              // Main Search Bar Design Ends Here
+            ),
+            const SizedBox(
+              height: 10,
+            ),
 
-              const SizedBox(
-                height: 5,
-              ),
+            const QuoteContainer(),
 
-              // Search Engine Items Starts Here
-              Container(
-                margin: const EdgeInsets.all(25),
-                height: 200,
-                color: Colors.transparent,
-                child: AnimationLimiter(
-                  child: GridView.builder(
-                    itemCount: images.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5, // number of items per row
-                      crossAxisSpacing: 20, // horizontal spacing between the items
-                      mainAxisSpacing: 20, // vertical spacing between the items
-                      childAspectRatio: 1, // control the aspect ratio of grid items
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      return AnimationConfiguration.staggeredGrid(
-                        position: index,
-                        duration: const Duration(milliseconds: 450),
-                        columnCount: 5,
-                        child: ScaleAnimation(
-                          child: FadeInAnimation(
-                            child: Hero(
-                              tag: 'image$index',
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AllAppSearchPage(index: index),
-                                    ),
-                                  );
-                                },
-                                child: Image.asset(
-                                  images[index],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              // Search Engine Items End Here
-            ],
-          ),
+
+
+
+
+
+            // Search Engine Items End Here
+          ],
         ),
       ),
     );
@@ -117,11 +162,26 @@ class _DashboarddPageState extends State<DashboarddPage> {
   void navigateToSearchPage(BuildContext context, String query) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => DuckDuckSearchPage(
-          query: query,
+      PageTransition(
+        type: PageTransitionType.fade, // or PageTransitionType.scale
+        child: DuckDuckSearchPage(
           index: 0,
+          query: query,
         ),
+        duration: const Duration(milliseconds: 700),
+      ),
+    );
+  }
+
+  void navigateToNextPage(BuildContext context, int index) {
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.fade,
+        childCurrent:
+            const DashboarddPage(), // Replace with the current page widget
+        child: AllAppSearchPage(index: index),
+        duration: const Duration(milliseconds: 700),
       ),
     );
   }
