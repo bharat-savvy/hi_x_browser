@@ -22,6 +22,10 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
   // InAppWebView Settings
   InAppWebViewController? webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
+    scrollsToTop: true,
+    horizontalScrollBarEnabled: false,
+    verticalScrollBarEnabled: false,
+    geolocationEnabled: false,
     useShouldOverrideUrlLoading: true,
     mediaPlaybackRequiresUserGesture: false,
     allowsInlineMediaPlayback: true,
@@ -34,6 +38,10 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
     supportZoom: true,
     supportMultipleWindows: true,
     allowFileAccess: true,
+    incognito: true,
+    safeBrowsingEnabled: true,
+    clearCache: true,
+    clearSessionCache: true,
   );
 
   // Refresh Page Circle Progress bar

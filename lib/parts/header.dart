@@ -6,11 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 import 'package:nothing_browser/pages/mainpage.dart';
 
-
-
-
-
-
 class HeaderPage extends StatefulWidget {
   final TextEditingController controller;
   final ValueChanged<String> onSubmitted;

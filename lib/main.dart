@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nothing_browser/initialpages/appcolors.dart';
-import 'package:nothing_browser/initialpages/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:nothing_browser/pages/mainpage.dart';
 import 'package:provider/provider.dart';
 import 'package:nothing_browser/parts/theme_provider.dart';
 
@@ -58,12 +58,14 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Nothing Browser',
           theme: ThemeData(
+            useMaterial3: true,
             primarySwatch: Colors.indigo,
             brightness: Brightness.light,
             visualDensity: VisualDensity.adaptivePlatformDensity,
             scaffoldBackgroundColor: AppColors.lightBlue,
           ),
           darkTheme: ThemeData(
+            useMaterial3: true,
             primarySwatch: Colors.blue,
             brightness: Brightness.dark,
             scaffoldBackgroundColor: AppColors.firefoxPurple,
@@ -71,7 +73,7 @@ class MyApp extends StatelessWidget {
           themeMode: themeMode,
           initialRoute: '/',
           routes: {
-            '/': (context) => const SplashScreen(),
+            '/': (context) => const DashboarddPage(),
           },
         );
       },

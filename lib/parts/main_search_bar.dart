@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:nothing_browser/pages/duckducksearch.dart';
+import 'package:nothing_browser/parts/thememodeswitch.dart';
 
 class MainSearchBar extends StatefulWidget {
   final TextEditingController searchController;
@@ -40,7 +41,7 @@ class _MainSearchBarState extends State<MainSearchBar> {
         context,
         MaterialPageRoute(
           builder: (context) => DuckDuckSearchPage(
-            query: 'https://duckduckgo.com/?q=$query',
+            query: 'https://start.duckduckgo.com/?q=$query',
             index: 0,
           ),
         ),
@@ -83,6 +84,8 @@ class _MainSearchBarState extends State<MainSearchBar> {
                 navigateToSearchPage(context, query);
               },
             ),
+            prefixIcon: const ThemeModeSwitch(),
+
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(

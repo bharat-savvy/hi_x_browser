@@ -4,10 +4,10 @@ import 'package:nothing_browser/pages/duckducksearch.dart';
 import 'package:nothing_browser/pages/allappsearch.dart';
 import 'package:nothing_browser/parts/main_search_bar.dart';
 import 'package:nothing_browser/parts/quotecontainer.dart';
-import 'package:nothing_browser/parts/thememodeswitch.dart';
 import 'package:page_transition/page_transition.dart';
 import '../websitedetails/websitedata.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:google_fonts/google_fonts.dart';
 
 class DashboarddPage extends StatefulWidget {
   const DashboarddPage({Key? key}) : super(key: key);
@@ -53,22 +53,24 @@ class _DashboarddPageState extends State<DashboarddPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const ThemeModeSwitch(),
-
-
             Image.asset(
               'assets/images/LogoFinal.png',
-              height: 70,
+              height: 65,
             ),
             const SizedBox(height: 5,),
-            const Text('Hi xBrowser: Fast & Private',
-            style: TextStyle(
-              fontSize: 15
+            Text('Hi xBrowser: Fast & Private',
+            style: GoogleFonts.roboto(
+              fontSize: 15,
+              letterSpacing: .3,
+              wordSpacing: 0.5
             ),
             ),
 
+
+
+
             const SizedBox(
-              height: 50,
+              height: 40,
             ),
 
             // Main Search Bar Design Starts Here
@@ -141,9 +143,8 @@ class _DashboarddPageState extends State<DashboarddPage> {
                 },
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+
+
 
             const QuoteContainer(),
 

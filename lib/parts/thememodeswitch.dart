@@ -19,10 +19,10 @@ class _ThemeModeSwitchState extends State<ThemeModeSwitch> {
         return IconButton(
           icon: Icon(themeProvider.themeMode == ThemeMode.light
               ? Icons.light_mode
-              : Icons.dark_mode),
+              : Icons.light_mode),
           color: themeProvider.themeMode == ThemeMode.light
               ? Colors.black
-              : Colors.yellow,
+              : Colors.red,
           onPressed: () {
             final newThemeMode =
             themeProvider.themeMode == ThemeMode.light

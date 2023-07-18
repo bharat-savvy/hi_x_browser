@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nothing_browser/initialpages/appcolors.dart';
 import 'package:nothing_browser/parts/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class QuoteContainer extends StatefulWidget {
   const QuoteContainer({Key? key}) : super(key: key);
@@ -20,8 +21,8 @@ class _QuoteContainerState extends State<QuoteContainer> {
           decoration: BoxDecoration(
             border: Border.all(
               color: themeProvider.themeMode == ThemeMode.light
-                  ? AppColors.firefoxPurple // Light mode color
-                  : AppColors.lightPurple, // Dark mode color
+                  ? AppColors.darkOliveGreen // Light mode color
+                  : AppColors.paleYellow, // Dark mode color
               width: 1.0,
             ),
             borderRadius: const BorderRadius.only(
@@ -30,24 +31,32 @@ class _QuoteContainerState extends State<QuoteContainer> {
               bottomLeft: Radius.circular(20.0),
               bottomRight: Radius.circular(20.0),
             ),
+
+
           ),
           width: 250.0,
-          height: 50,
-          child: Center(
-            child: DefaultTextStyle(
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12.0,
-                color: themeProvider.themeMode == ThemeMode.light
-                    ? AppColors.firefoxPurple // Light mode color
-                    : AppColors.lightPurple, // Dark mode color
-              ),
-              child: AnimatedTextKit(
-                stopPauseOnTap: true,
-                animatedTexts: [
-                  TypewriterAnimatedText('Discipline is the best tool'),
-                ],
+          height: 80,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Center(
+              child: DefaultTextStyle(
+                textAlign: TextAlign.center,
+                style: GoogleFonts.lato(
+                  letterSpacing: 0.3,
+                  wordSpacing: 0.5,
 
+                  fontSize: 15.0,
+                  color: themeProvider.themeMode == ThemeMode.light
+                      ? AppColors.firefoxPurple // Light mode color
+                      : AppColors.lightPurple, // Dark mode color
+                ),
+                child: AnimatedTextKit(
+                  stopPauseOnTap: true,
+                  animatedTexts: [
+                    TypewriterAnimatedText('Hurry! Search anything no one can catch you..'),
+                  ],
+
+                ),
               ),
             ),
           ),
