@@ -55,7 +55,7 @@ class _DashboarddPageState extends State<DashboarddPage> {
           children: [
             Image.asset(
               'assets/images/LogoFinal.png',
-              height: 65,
+              height: 60,
             ),
             const SizedBox(height: 5,),
             Text('Hi xBrowser: Fast & Private',
