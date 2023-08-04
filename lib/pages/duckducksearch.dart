@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:nothing_browser/initialpages/drawerpage.dart';
 import 'package:nothing_browser/parts/download_helper.dart';
 import 'package:nothing_browser/websitedetails/websitedata.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nothing_browser/parts/header.dart';
 
 class DuckDuckSearchPage extends StatefulWidget {
@@ -46,8 +46,7 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
   String url = "";
   double progress = 0;
   final urlController = TextEditingController();
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+
   List<String> webpages1 = websiteData['webpages1']!;
 
   @override
@@ -72,12 +71,7 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
       url = 'https://duckduckgo.com/?q=${widget.query}';
     }
 
-    var initializationSettingsAndroid =
-    const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettings =
-    InitializationSettings(android: initializationSettingsAndroid);
 
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   Future<void> downloadFile(String url, String filename) async {
@@ -87,7 +81,6 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
   }
 
   Future<void> showDownloadNotification(String fileName, int progress) async {
-    await NotificationHelper.showDownloadNotification(fileName, progress);
   }
 
   Future<void> launchGooglePlayLink(String packageName) async {
@@ -134,6 +127,7 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
       },
       child: SafeArea(
         child: Scaffold(
+          drawer: const MyDrawer(),
           body: Column(
             children: [
               HeaderPage(

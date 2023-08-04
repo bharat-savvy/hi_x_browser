@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:nothing_browser/initialpages/drawerpage.dart';
 import 'package:nothing_browser/parts/header.dart';
 import 'package:nothing_browser/websitedetails/websitedata.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nothing_browser/parts/download_helper.dart';
 
 class AllAppSearchPage extends StatefulWidget {
@@ -38,10 +38,6 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
     supportZoom: true,
     supportMultipleWindows: true,
     allowFileAccess: true,
-    incognito: true,
-    safeBrowsingEnabled: true,
-    clearCache: true,
-    clearSessionCache: true,
   );
 
   // Refresh Page Circle Progress bar
@@ -50,8 +46,7 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
   double progress = 0;
   final urlController = TextEditingController();
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+
   List<String> webpages = websiteData['webpages']!;
   List<String> webpages1 = websiteData['webpages1']!;
   List<String> webpages2 = websiteData['webpages2']!;
@@ -71,12 +66,9 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
       },
     );
 
-    var initializationSettingsAndroid =
-    const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid);
 
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+
   }
 
   Future<void> downloadFile(String url, String filename) async {
@@ -86,12 +78,13 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
   }
 
   Future<void> showDownloadNotification(String fileName, int progress) async {
-    await NotificationHelper.showDownloadNotification(fileName, progress);
   }
 
   void refreshWebView() {
     webViewController!.reload();
   }
+
+
 
   @override
   void dispose() {
@@ -112,13 +105,10 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
         }
       },
       child: Scaffold(
-
+        drawer: const MyDrawer(),
         body: SafeArea(
           child: Column(
             children: [
-
-
-
               HeaderPage(
                 controller: urlController,
                 onSubmitted: (value) {

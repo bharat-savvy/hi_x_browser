@@ -5,11 +5,11 @@ const Map<String, List<String>> websiteData = {
     'https://www.bing.com/',
     'https://www.yahoo.com/',
     'https://yandex.com/',
-    'https://startpage.com/',
-    'https://www.ask.com/',
-    'https://www.ecosia.org/',
+    'https://www.instagram.com/',
+    'https://chat.openai.com/',
+    'https://bard.google.com/',
     'https://www.wolframalpha.com/',
-    'https://search.aol.com/',
+    'https://www.youtube.com/',
   ],
   'webpages1': [
     "https://duckduckgo.com/?q",
@@ -21,7 +21,7 @@ const Map<String, List<String>> websiteData = {
     "https://www.ask.com/web?q",
     "https://www.ecosia.com/search?method=index&q",
     "https://www.wolframalpha.com/input?i",
-    "https://search.aol.com/aol/search?q",
+    "https://www.youtube.com/results?search_query",
   ],
 
   'webpages2': [
@@ -34,7 +34,7 @@ const Map<String, List<String>> websiteData = {
     "https://www.ask.com/web?q",
     "https://www.ecosia.com/search?method=index&q",
     "https://www.wolframalpha.com/input?i",
-    "https://search.aol.com/aol/search?q",
+    "https://www.youtube.com/results?search_query",
   ],
 
 

@@ -59,6 +59,12 @@ class _HeaderPageState extends State<HeaderPage> {
 
   }
 
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final themeMode = themeProvider.themeMode;
@@ -74,6 +80,20 @@ class _HeaderPageState extends State<HeaderPage> {
           children: [
             IconButton(
               icon: const Icon(
+                  Icons.menu
+              ),
+
+              onPressed: (){
+                Scaffold.of(context).openDrawer();
+
+              }, // Call the onRefresh callback
+
+
+
+            ),
+
+            IconButton(
+              icon: const Icon(
                   Icons.refresh
               ),
 
@@ -82,6 +102,8 @@ class _HeaderPageState extends State<HeaderPage> {
 
 
             ),
+
+
 
 
 
@@ -118,19 +140,22 @@ class _HeaderPageState extends State<HeaderPage> {
               ),
             ),
 
+            IconButton(
+              icon: const Icon(
+                Icons.bookmark_add_outlined,
+              ),
+              onPressed: () {
 
-
-
-
+              },
+            ),
 
             IconButton(
               color: themeMode == ThemeMode.light ? Colors.red : Colors.yellow, // Set the color based on the theme mode
               icon: const Icon(
-                Icons.local_fire_department_rounded,
+                Icons.local_fire_department_outlined,
               ),
               onPressed: () => _clearCache(context),
             ),
-
 
           ],
         ),
