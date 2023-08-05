@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nothing_browser/initialpages/appcolors.dart';
 import 'package:nothing_browser/pages/duckducksearch.dart';
 import 'package:nothing_browser/pages/allappsearch.dart';
 import 'package:nothing_browser/parts/main_search_bar.dart';
 import 'package:nothing_browser/parts/quotecontainer.dart';
 import 'package:page_transition/page_transition.dart';
-import '../websitedetails/websitedata.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:google_fonts/google_fonts.dart';
 
 class DashboarddPage extends StatefulWidget {
@@ -20,36 +17,35 @@ class _DashboarddPageState extends State<DashboarddPage> {
   //for images
   List<String> imagesUrls = [];
 
+
   @override
   void initState() {
     super.initState();
     fetchImages();
   }
 
-  Future<void> fetchImages() async {
-    try {
-      final List<firebase_storage.Reference> imageRefs =
-          websiteData['imagesUrls']!.map((imageUrl) {
-        return firebase_storage.FirebaseStorage.instance.refFromURL(imageUrl);
-      }).toList();
-
-      final List<String> downloadUrls = await Future.wait(
-        imageRefs.map((imageRef) => imageRef.getDownloadURL()).toList(),
-      );
-
-      setState(() {
-        imagesUrls = downloadUrls;
-      });
-    } catch (e) {
-      // Handle any errors
-      print('Error fetching images: $e');
-    }
+  void fetchImages() {
+    setState(() {
+      imagesUrls = [
+        'assets/images/duck.png',
+        'assets/images/google.png',
+        'assets/images/bing.png',
+        'assets/images/yahoo.png',
+        'assets/images/yandex.png',
+        'assets/images/start.png',
+        'assets/images/ask.png',
+        'assets/images/ecosia.png',
+        'assets/images/wolfarm.png',
+        'assets/images/aol.png',
+      ];
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Container(
+      floatingActionButton: SizedBox(
         width: 40,
         height: 40,
         child: FloatingActionButton(
@@ -120,43 +116,16 @@ class _DashboarddPageState extends State<DashboarddPage> {
                 ),
                 itemBuilder: (BuildContext context, int index) {
                   final imageUrl = imagesUrls[index];
-                  return FutureBuilder(
-                    future: precacheImage(
-                      NetworkImage(imageUrl),
-                      context,
-                    ),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        // Display a circular progress indicator while the image is loading
-                        return const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth:
-                                  2, // Adjust the thickness of the progress indicator
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.deepDarkPurple),
-                            ));
-                      }
-                      if (snapshot.connectionState == ConnectionState.done &&
-                          snapshot.error == null) {
-                        // The image has finished loading, display it
-                        return InkWell(
-                          onTap: () {
-                            navigateToNextPage(context, index);
-                          },
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      } else {
-                        // Error occurred while loading the image
-                        return const Icon(Icons.error);
-                      }
+                  return InkWell(
+                    onTap: () {
+                      navigateToNextPage(context, index);
                     },
+                    child: Image.asset(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                    ),
                   );
+
                 },
               ),
             ),

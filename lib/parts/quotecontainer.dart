@@ -51,6 +51,7 @@ class _QuoteContainerState extends State<QuoteContainer> {
                       : AppColors.lightPurple, // Dark mode color
                 ),
                 child: AnimatedTextKit(
+                  totalRepeatCount: 1,
                   stopPauseOnTap: true,
                   animatedTexts: [
                     TypewriterAnimatedText('Hurry! Search anything no one can catch you..'),

@@ -1,6 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:nothing_browser/initialpages/drawerpage.dart';
 import 'package:nothing_browser/parts/download_helper.dart';
@@ -187,6 +188,25 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
                       },
                       shouldOverrideUrlLoading: (controller, navigationAction) async {
                         var uri = navigationAction.request.url!;
+                        if (uri.scheme == 'intent') {
+                          try {
+                            final result = await const MethodChannel('HiChannel') // Replace with your channel name
+                                .invokeMethod('launchIntent', uri.toString());
+
+                            if (result == 'success') {
+                              // Intent launched successfully
+                              return NavigationActionPolicy.CANCEL; // Prevent the WebView from loading the URL
+                            } else {
+                              // Handle intent launch failure
+                              print('Error launching intent');
+                            }
+                          } catch (e) {
+                            // Handle any errors that occur during intent launch
+                            print('Error launching intent: $e');
+                          }
+                        }
+
+
 
                         if (![
                           "http",
@@ -209,7 +229,7 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
                               openWhatsAppProductCatalogPrime(phoneNumber);
                               return NavigationActionPolicy.CANCEL;
                             }
-                          } else {
+                          } else{
                             if (await canLaunchUrl(uri)) {
                               await launchUrl(uri);
                               return NavigationActionPolicy.CANCEL;

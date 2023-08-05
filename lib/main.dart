@@ -1,6 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:nothing_browser/initialpages/appcolors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:nothing_browser/initialpages/downloadpage.dart';
@@ -10,6 +11,8 @@ import 'package:nothing_browser/parts/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Logger.level = Level.warning; // Set the log level to warning or error in production
+
   AwesomeNotifications().initialize(
     'resource://drawable/res_app_icon',
     [
@@ -17,12 +20,13 @@ void main() async {
         channelKey: 'download_channel',
         channelName: 'Download Notifications',
         channelDescription: 'Notifications for file downloads',
-        defaultColor: Color(0xFF9D50DD),
+        defaultColor: const Color(0xFF9D50DD),
         ledColor: Colors.white,
         vibrationPattern: lowVibrationPattern,
         importance: NotificationImportance.High,
         enableLights: true,
         enableVibration: true,
+        playSound: false
       ),
     ],
   );

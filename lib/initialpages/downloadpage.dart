@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:logger/logger.dart';
 import 'package:nothing_browser/initialpages/appcolors.dart';
 import 'package:nothing_browser/parts/quotecontainerdownloader.dart';
 import 'package:nothing_browser/parts/theme_provider.dart';
-import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class DownloadPage extends StatefulWidget {
@@ -17,6 +15,8 @@ class DownloadPage extends StatefulWidget {
 
 class _DownloadPageState extends State<DownloadPage> {
   late ThemeProvider themeProvider;
+  final Logger _logger = Logger();
+
 
   @override
   void didChangeDependencies() {
@@ -26,23 +26,31 @@ class _DownloadPageState extends State<DownloadPage> {
 
   final TextEditingController _urlController = TextEditingController();
 
-  Future<void> downloadFile(String url, String filename) async {
+  Future<void> downloadFile(
+      String url, String filename, Function(String, double) onProgressCallback) async {
     try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        // Get the app's documents directory
-        Directory documentsDir = await getApplicationDocumentsDirectory();
-
-        // Create a file within the documents directory
-        File file = File('${documentsDir.path}/$filename');
-        await file.writeAsBytes(response.bodyBytes);
-
-        print('File downloaded to: ${file.path}');
-      } else {
-        print('Failed to download file');
-      }
+      await FileDownloader.downloadFile(
+        url: url,
+        name: filename,
+        onProgress: (String? fileName, double? progress) {
+          if (fileName != null && progress != null) {
+            _logger.d('FILE $fileName HAS PROGRESS $progress');
+            onProgressCallback(fileName, progress);
+          }
+        },
+        onDownloadCompleted: (String? path) {
+          if (path != null) {
+            _logger.d('FILE DOWNLOADED TO PATH: $path');
+          }
+        },
+        onDownloadError: (String? error) {
+          if (error != null) {
+            _logger.e('DOWNLOAD ERROR: $error');
+          }
+        },
+      );
     } catch (e) {
-      print('Error downloading file: $e');
+      _logger.e('Error downloading file: $e');
     }
   }
 
@@ -86,37 +94,82 @@ class _DownloadPageState extends State<DownloadPage> {
 
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: TextFormField(
-                  controller: _urlController,
-                  style: const TextStyle( // Customize the input text style
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.normal,
+                child: Container(
+                  width: 315,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                  decoration: const InputDecoration(
-                    labelText: 'Enter URL',
-                    labelStyle: TextStyle(color: Colors.red), // Customize the label text style
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red, width: 2.0), // Customize the border when the field is focused
+
+                  child: Card(
+                    elevation: 0,
+                    shadowColor: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey, width: 1.0), // Customize the border when the field is not focused
+
+                    child: TextFormField(
+                      controller: _urlController,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: 'Enter URL',
+                        labelStyle: const TextStyle(color: Colors.red),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 16.0,
+                        ),
+                        
+                        filled: true,
+                        fillColor: themeMode == ThemeMode.light ? AppColors.lightBlue : AppColors.firefoxPurple,
+                        prefixIcon: const Icon(Icons.link, color: Colors.red),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.downloading,
+                          color: Colors.red,
+                          ),
+                          onPressed: () async {
+                            String url = _urlController.text;
+                            if (url.isNotEmpty) {
+                              final filename = url.substring(url.lastIndexOf('/') + 1);
+                              await downloadFile(url, filename, (fileName, progress) {
+                                // Update your UI with the progress (e.g., show a progress bar)
+                                // You can access 'fileName' and 'progress' here.
+                              });
+                            }
+                          },
+                        )// Use a prefix icon instead of a suffix icon
+                      ),
                     ),
-                    suffixIcon: Icon(Icons.link, color: Colors.red), // Add an icon at the end of the input
                   ),
                 ),
+
 
               ),
               ElevatedButton(
                 onPressed: () async {
                   String url = _urlController.text;
                   if (url.isNotEmpty) {
-                    String filename = 'downloaded_file'; // Provide your desired filename here
-                    await downloadFile(url, filename);
+                    final filename = url.substring(url.lastIndexOf('/') + 1);
+                    await downloadFile(url, filename, (fileName, progress) {
+                      // Update your UI with the progress (e.g., show a progress bar)
+                      // You can access 'fileName' and 'progress' here.
+                    });
                   }
                 },
                 child: const Text('Download'),
               ),
+
             ],
           ),
         ),
