@@ -23,7 +23,7 @@ class ThemeProvider with ChangeNotifier {
       case ThemeModeType.dark:
         return ThemeMode.dark;
       default:
-        return ThemeMode.dark;
+        return ThemeMode.light;
     }
   }
 }

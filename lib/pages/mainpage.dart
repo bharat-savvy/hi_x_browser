@@ -49,6 +49,23 @@ class _DashboarddPageState extends State<DashboarddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Container(
+        width: 40,
+        height: 40,
+        child: FloatingActionButton(
+
+          backgroundColor: Colors.red,
+
+          onPressed: (){
+            Navigator.pushNamed(context, '/download');
+          },
+          child: const Icon(Icons.download,
+          color: Colors.white,
+          ),
+        ),
+      ),
+
+
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

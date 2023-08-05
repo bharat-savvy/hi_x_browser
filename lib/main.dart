@@ -1,15 +1,35 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nothing_browser/initialpages/appcolors.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:nothing_browser/initialpages/downloadpage.dart';
 import 'package:nothing_browser/pages/mainpage.dart';
 import 'package:provider/provider.dart';
 import 'package:nothing_browser/parts/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AwesomeNotifications().initialize(
+    'resource://drawable/res_app_icon',
+    [
+      NotificationChannel(
+        channelKey: 'download_channel',
+        channelName: 'Download Notifications',
+        channelDescription: 'Notifications for file downloads',
+        defaultColor: Color(0xFF9D50DD),
+        ledColor: Colors.white,
+        vibrationPattern: lowVibrationPattern,
+        importance: NotificationImportance.High,
+        enableLights: true,
+        enableVibration: true,
+      ),
+    ],
+  );
+
   await Firebase.initializeApp();
-  
+
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: AppColors.firefoxPurple,
@@ -75,6 +95,7 @@ class MyApp extends StatelessWidget {
           initialRoute: '/',
           routes: {
             '/': (context) => const DashboarddPage(),
+            '/download': (context) => const DownloadPage(),
           },
         );
       },

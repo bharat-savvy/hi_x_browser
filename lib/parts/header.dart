@@ -142,10 +142,10 @@ class _HeaderPageState extends State<HeaderPage> {
 
             IconButton(
               icon: const Icon(
-                Icons.bookmark_add_outlined,
+                Icons.download_for_offline_outlined,
               ),
               onPressed: () {
-
+                Navigator.pushNamed(context, '/download');
               },
             ),
 

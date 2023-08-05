@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -81,6 +82,14 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
   }
 
   Future<void> showDownloadNotification(String fileName, int progress) async {
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 1,
+        channelKey: 'download_channel',
+        title: 'File Download',
+        body: 'Downloading: $fileName\nProgress: $progress%',
+      ),
+    );
   }
 
   Future<void> launchGooglePlayLink(String packageName) async {

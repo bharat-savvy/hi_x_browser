@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -46,7 +47,6 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
   double progress = 0;
   final urlController = TextEditingController();
 
-
   List<String> webpages = websiteData['webpages']!;
   List<String> webpages1 = websiteData['webpages1']!;
   List<String> webpages2 = websiteData['webpages2']!;
@@ -58,17 +58,14 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
-      settings: PullToRefreshSettings(color: Colors.green.withOpacity(0.5)),
-      onRefresh: () async {
-        if (defaultTargetPlatform == TargetPlatform.android) {
-          webViewController?.reload();
-        }
-      },
-    );
-
-
-
-
+            settings:
+                PullToRefreshSettings(color: Colors.green.withOpacity(0.5)),
+            onRefresh: () async {
+              if (defaultTargetPlatform == TargetPlatform.android) {
+                webViewController?.reload();
+              }
+            },
+          );
   }
 
   Future<void> downloadFile(String url, String filename) async {
@@ -78,13 +75,19 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
   }
 
   Future<void> showDownloadNotification(String fileName, int progress) async {
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 1,
+        channelKey: 'download_channel',
+        title: 'File Download',
+        body: 'Downloading: $fileName\nProgress: $progress%',
+      ),
+    );
   }
 
   void refreshWebView() {
     webViewController!.reload();
   }
-
-
 
   @override
   void dispose() {
@@ -96,120 +99,127 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        if (await webViewController!.canGoBack()) {
-          webViewController!.goBack();
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
-        drawer: const MyDrawer(),
-        body: SafeArea(
-          child: Column(
-            children: [
-              HeaderPage(
-                controller: urlController,
-                onSubmitted: (value) {
-                  final index = widget.index;
-                  if (index >= 0 && index < webpages1.length) {
-                    webViewController?.loadUrl(
-                      urlRequest: URLRequest(
-                        url: WebUri("${webpages1[index]}=$value"),
-                      ),
-                    );
-                  }
-                },
-                onRefresh: refreshWebView,
-              ),
-              Expanded(
-                child: Stack(
-                  children: [
-                    Hero(
-                      tag: 'image${widget.index}',
-                      child: InAppWebView(
-                        key: webViewKey,
-                        initialUrlRequest: URLRequest(url: WebUri(webpages[widget.index])),
-                        initialSettings: settings,
-                        pullToRefreshController: pullToRefreshController,
-                        onWebViewCreated: (InAppWebViewController controller) {
-                          webViewController = controller;
-                        },
-                        onLoadStart: (controller, url) {
-                          setState(() {
-                            this.url = url.toString();
-                            urlController.text = this.url;
-                          });
-                        },
-                        onPermissionRequest: (controller, request) async {
-                          return PermissionResponse(
-                            resources: request.resources,
-                            action: PermissionResponseAction.GRANT,
-                          );
-                        },
-                        shouldOverrideUrlLoading: (controller, navigationAction) async {
-                          var uri = navigationAction.request.url!;
-                          if (![
-                            "http",
-                            "https",
-                            "file",
-                            "chrome",
-                            "data",
-                            "javascript",
-                            "about"
-                          ].contains(uri.scheme)) {
-                            if (await canLaunchUrl(uri)) {
-                              await launchUrl(uri);
-                              return NavigationActionPolicy.CANCEL;
-                            }
-                          }
-                          return NavigationActionPolicy.ALLOW;
-                        },
-                        onLoadStop: (controller, url) async {
-                          pullToRefreshController?.endRefreshing();
-                          setState(() {
-                            this.url = url.toString();
-                            urlController.text = this.url;
-                          });
-                        },
-                        onReceivedError: (controller, request, error) {
-                          pullToRefreshController?.endRefreshing();
-                        },
-                        onProgressChanged: (controller, progress) {
-                          if (progress == 100) {
-                            pullToRefreshController?.endRefreshing();
-                          }
-                          setState(() {
-                            this.progress = progress / 100;
-                            urlController.text = url;
-                          });
-                        },
-                        onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                          setState(() {
-                            this.url = url.toString();
-                            urlController.text = this.url;
-                          });
-                        },
-                        onDownloadStartRequest: (controller, urlRequest) async {
-                          final url = urlRequest.url.toString();
-                          final filename = url.substring(url.lastIndexOf('/') + 1);
-                          await downloadFile(url, filename);
-                        },
-                      ),
-                    ),
-                    if (progress < 1.0)
-                      LinearProgressIndicator(
-                        value: progress,
-                        color: Colors.green.withOpacity(0.3),
-                      ),
-                  ],
+        onWillPop: () async {
+          if (await webViewController!.canGoBack()) {
+            webViewController!.goBack();
+            return false;
+          } else {
+            return true;
+          }
+        },
+        child: Scaffold(
+          drawer: const MyDrawer(),
+          body: SafeArea(
+            child: Column(
+              children: [
+                HeaderPage(
+                  controller: urlController,
+                  onSubmitted: (value) {
+                    final index = widget.index;
+                    if (index >= 0 && index < webpages1.length) {
+                      webViewController?.loadUrl(
+                        urlRequest: URLRequest(
+                          url: WebUri("${webpages1[index]}=$value"),
+                        ),
+                      );
+                    }
+                  },
+                  onRefresh: refreshWebView,
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Hero(
+                        tag: 'image${widget.index}',
+                        child: InAppWebView(
+                          key: webViewKey,
+                          initialUrlRequest:
+                              URLRequest(url: WebUri(webpages[widget.index])),
+                          initialSettings: settings,
+                          pullToRefreshController: pullToRefreshController,
+                          onWebViewCreated:
+                              (InAppWebViewController controller) {
+                            webViewController = controller;
+                          },
+                          onLoadStart: (controller, url) {
+                            setState(() {
+                              this.url = url.toString();
+                              urlController.text = this.url;
+                            });
+                          },
+                          onPermissionRequest: (controller, request) async {
+                            return PermissionResponse(
+                              resources: request.resources,
+                              action: PermissionResponseAction.GRANT,
+                            );
+                          },
+                          shouldOverrideUrlLoading:
+                              (controller, navigationAction) async {
+                            var uri = navigationAction.request.url!;
+                            if (![
+                              "http",
+                              "https",
+                              "file",
+                              "chrome",
+                              "data",
+                              "javascript",
+                              "about"
+                            ].contains(uri.scheme)) {
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri);
+                                return NavigationActionPolicy.CANCEL;
+                              }
+                            }
+                            return NavigationActionPolicy.ALLOW;
+                          },
+                          onLoadStop: (controller, url) async {
+                            pullToRefreshController?.endRefreshing();
+                            setState(() {
+                              this.url = url.toString();
+                              urlController.text = this.url;
+                            });
+                          },
+                          onReceivedError: (controller, request, error) {
+                            pullToRefreshController?.endRefreshing();
+                          },
+                          onProgressChanged: (controller, progress) {
+                            if (progress == 100) {
+                              pullToRefreshController?.endRefreshing();
+                            }
+                            setState(() {
+                              this.progress = progress / 100;
+                              urlController.text = url;
+                            });
+                          },
+                          onUpdateVisitedHistory:
+                              (controller, url, androidIsReload) {
+                            setState(() {
+                              this.url = url.toString();
+                              urlController.text = this.url;
+                            });
+                          },
+                          onDownloadStartRequest: (controller, urlRequest) async {
+                            final url = urlRequest.url.toString();
+                            final filename = url.substring(url.lastIndexOf('/') + 1);
+                            await downloadFile(url, filename);
+                          },
+
+                        ),
+                      ),
+                      if (progress < 1.0)
+                        LinearProgressIndicator(
+                          value: progress,
+                          color: Colors.green.withOpacity(0.3),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+
+
+
+        ));
   }
 }

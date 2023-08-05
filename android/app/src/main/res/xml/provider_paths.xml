@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <files-path name="files" path="." />
+
+    <!-- Add the following line to provide access to the external storage directory -->
+    <external-path name="external_files" path="." />
 </paths>
