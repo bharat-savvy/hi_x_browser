@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:nothing_browser/pages/duckducksearch.dart';
-import 'package:nothing_browser/parts/thememodeswitch.dart';
+import 'package:nothing_browser/thememode/thememodeswitch.dart';
 
 class MainSearchBar extends StatefulWidget {
   final TextEditingController searchController;
@@ -18,8 +17,6 @@ class MainSearchBar extends StatefulWidget {
 }
 
 class _MainSearchBarState extends State<MainSearchBar> {
-  final DatabaseReference databaseReference =
-  FirebaseDatabase.instance.ref();
 
   String dynamicHintText = 'Search or Enter URL';
 

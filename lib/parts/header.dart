@@ -1,7 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nothing_browser/initialpages/appcolors.dart';
-import 'package:nothing_browser/parts/theme_provider.dart';
+import 'package:nothing_browser/downloadrelated/downloadpage.dart';
+import 'package:nothing_browser/pages/mainpage.dart';
+import 'package:nothing_browser/thememode/theme_provider.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+
 
 class HeaderPage extends StatefulWidget {
   final TextEditingController controller;
@@ -27,6 +34,42 @@ class _HeaderPageState extends State<HeaderPage> {
     super.didChangeDependencies();
     themeProvider = Provider.of<ThemeProvider>(context);
   }
+
+  Future<void> _showExitConfirmationDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Emergency Exit',
+            style: GoogleFonts.lato(
+              fontSize: 20,
+              color: Colors.red
+            ),
+          ),
+          content: Text('Please note that using this feature will exit the Hi xBrowser but it will still available on Device tab.',
+            style: GoogleFonts.lato(),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                exit(0); // Close the entire app
+              },
+              child: const Text('Yes'),
+            ),
+
+          ],
+        );
+      },
+    );
+  }
+
 
 
 
@@ -86,27 +129,40 @@ class _HeaderPageState extends State<HeaderPage> {
                 ),
               ),
             ),
+
+
             IconButton(
               icon: const Icon(
                 Icons.download_for_offline_outlined,
               ),
               onPressed: () {
-                Navigator.pushNamed(context, '/download');
+                navigateToDownloadPage(context);
               },
             ),
             IconButton(
-              color: themeMode == ThemeMode.light
-                  ? Colors.red
-                  : Colors.yellow, // Set the color based on the theme mode
+               // Set the color based on the theme mode
               icon: const Icon(
-                Icons.local_fire_department_outlined,
+                Icons.home_outlined,
               ),
-              onPressed: () {
-
-                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-
+              onPressed: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DashboarddPage()),
+                );
               },
             ),
+
+            IconButton(
+              icon: const Icon(
+                Icons.power_settings_new,
+                color: Colors.red,
+              ),
+              onPressed: () {
+                _showExitConfirmationDialog(context);
+              },
+            ),
+
+
           ],
         ),
       ),
@@ -118,4 +174,15 @@ class _HeaderPageState extends State<HeaderPage> {
       ],
     );
   }
+}
+
+void navigateToDownloadPage(BuildContext context) {
+  Navigator.push(
+    context,
+    PageTransition(
+      type: PageTransitionType.fade, // or PageTransitionType.scale
+      child: const DownloadPage(),
+      duration: const Duration(milliseconds: 400),
+    ),
+  );
 }

@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:nothing_browser/initialpages/appcolors.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:nothing_browser/initialpages/downloadpage.dart';
+import 'package:nothing_browser/downloadrelated/downloadpage.dart';
+import 'package:nothing_browser/initialpages/help.dart';
 import 'package:nothing_browser/pages/mainpage.dart';
 import 'package:provider/provider.dart';
-import 'package:nothing_browser/parts/theme_provider.dart';
+import 'package:nothing_browser/thememode/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,8 +31,6 @@ void main() async {
     ],
   );
 
-  await Firebase.initializeApp();
-
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -45,6 +43,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         // Add more providers here if needed
       ],
@@ -60,6 +59,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
+
         final themeMode = themeProvider.themeMode;
         final statusBarColor = themeMode == ThemeMode.light
             ? AppColors.lightBlue
@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Nothing Browser',
+          title: 'Hi xBrowser',
           theme: ThemeData(
             useMaterial3: true,
             primarySwatch: Colors.indigo,
@@ -93,6 +93,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
             primarySwatch: Colors.blue,
             brightness: Brightness.dark,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
             scaffoldBackgroundColor: AppColors.firefoxPurple,
           ),
           themeMode: themeMode,
@@ -100,6 +101,9 @@ class MyApp extends StatelessWidget {
           routes: {
             '/': (context) => const DashboarddPage(),
             '/download': (context) => const DownloadPage(),
+            '/help': (context) => const HelpPage(),
+
+
           },
         );
       },

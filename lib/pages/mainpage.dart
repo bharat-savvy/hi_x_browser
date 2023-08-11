@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nothing_browser/pages/duckducksearch.dart';
 import 'package:nothing_browser/pages/allappsearch.dart';
+import 'package:nothing_browser/parts/floatingpage.dart';
 import 'package:nothing_browser/parts/main_search_bar.dart';
-import 'package:nothing_browser/parts/quotecontainer.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,53 +15,32 @@ class DashboarddPage extends StatefulWidget {
 
 class _DashboarddPageState extends State<DashboarddPage> {
   //for images
-  List<String> imagesUrls = [];
-
+  final List<String> imagesUrls = [
+    'assets/images/duck.png',
+    'assets/images/google.png',
+    'assets/images/bing.png',
+    'assets/images/yahoo.png',
+    'assets/images/yandex.png',
+    'assets/images/start.png',
+    'assets/images/ask.png',
+    'assets/images/ecosia.png',
+    'assets/images/wolfarm.png',
+    'assets/images/aol.png',
+  ];
 
   @override
   void initState() {
     super.initState();
-    fetchImages();
+
   }
 
-  void fetchImages() {
-    setState(() {
-      imagesUrls = [
-        'assets/images/duck.png',
-        'assets/images/google.png',
-        'assets/images/bing.png',
-        'assets/images/yahoo.png',
-        'assets/images/yandex.png',
-        'assets/images/start.png',
-        'assets/images/ask.png',
-        'assets/images/ecosia.png',
-        'assets/images/wolfarm.png',
-        'assets/images/aol.png',
-      ];
-    });
-  }
+
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: SizedBox(
-        width: 40,
-        height: 40,
-        child: FloatingActionButton(
-
-          backgroundColor: Colors.red,
-
-          onPressed: (){
-            Navigator.pushNamed(context, '/download');
-          },
-          child: const Icon(Icons.download,
-          color: Colors.white,
-          ),
-        ),
-      ),
-
-
+      floatingActionButton: const FloatingButtonPage(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -70,17 +49,14 @@ class _DashboarddPageState extends State<DashboarddPage> {
               'assets/images/LogoFinal.png',
               height: 60,
             ),
-            const SizedBox(height: 5,),
-            Text('Hi xBrowser: Fast & Private',
-            style: GoogleFonts.roboto(
-              fontSize: 15,
-              letterSpacing: .3,
-              wordSpacing: 0.5
+            const SizedBox(
+              height: 5,
             ),
+            Text(
+              'Hi xBrowser: Fast & Private',
+              style: GoogleFonts.roboto(
+                  fontSize: 15, letterSpacing: .3, wordSpacing: 0.5),
             ),
-
-
-
 
             const SizedBox(
               height: 40,
@@ -114,43 +90,38 @@ class _DashboarddPageState extends State<DashboarddPage> {
                   mainAxisSpacing: 20, // vertical spacing between the items
                   childAspectRatio: 1, // control the aspect ratio of grid items
                 ),
-                itemBuilder: (BuildContext context, int index) {
-                  final imageUrl = imagesUrls[index];
-                  return InkWell(
-                    onTap: () {
-                      navigateToNextPage(context, index);
-                    },
-                    child: Image.asset(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-
-                },
+                itemBuilder: _buildImageWidget,
               ),
             ),
-
-
-
-            const QuoteContainer(),
-
-
-
-
 
 
             // Search Engine Items End Here
           ],
         ),
       ),
+
     );
   }
+  Widget _buildImageWidget(BuildContext context, int index) {
+    final imageUrl = imagesUrls[index];
+    return InkWell(
+      onTap: () {
+        navigateToNextPage(context, index);
+      },
+      child: Image.asset(
+        imageUrl,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+
+
 
   void navigateToSearchPage(BuildContext context, String query) {
     Navigator.push(
       context,
       PageTransition(
-        type: PageTransitionType.fade, // or PageTransitionType.scale
+        type: PageTransitionType.leftToRight, // or PageTransitionType.scale
         child: DuckDuckSearchPage(
           index: 0,
           query: query,
@@ -173,3 +144,5 @@ class _DashboarddPageState extends State<DashboarddPage> {
     );
   }
 }
+
+

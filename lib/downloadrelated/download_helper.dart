@@ -7,6 +7,9 @@ class DownloadHelper {
   static Future<void> downloadFile(
       String url, String filename, Function(String, double) onProgressCallback) async {
     try {
+
+
+
       await FileDownloader.downloadFile(
         url: url,
         name: filename,

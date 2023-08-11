@@ -3,11 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:nothing_browser/initialpages/drawerpage.dart';
+import 'package:nothing_browser/parts/drawerpage.dart';
 import 'package:nothing_browser/parts/header.dart';
 import 'package:nothing_browser/websitedetails/websitedata.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:nothing_browser/parts/download_helper.dart';
+import 'package:nothing_browser/downloadrelated/download_helper.dart';
+import 'package:nothing_browser/downloadrelated/sniffers.dart';
 
 class AllAppSearchPage extends StatefulWidget {
   final int index;
@@ -24,6 +25,7 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
   // InAppWebView Settings
   InAppWebViewController? webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
+    algorithmicDarkeningAllowed: true,
     scrollsToTop: true,
     horizontalScrollBarEnabled: false,
     verticalScrollBarEnabled: false,
@@ -40,6 +42,10 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
     supportZoom: true,
     supportMultipleWindows: true,
     allowFileAccess: true,
+    allowFileAccessFromFileURLs: true,
+    safeBrowsingEnabled: true,
+    clearSessionCache: true,
+    clearCache: true
   );
 
   // Refresh Page Circle Progress bar
@@ -99,16 +105,24 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final videoSniffer = VideoSniffer(
+      webViewController: webViewController,
+      context: context,
+    );
+
     return WillPopScope(
         onWillPop: () async {
           if (await webViewController!.canGoBack()) {
             webViewController!.goBack();
             return false;
           } else {
+            webViewController!.dispose();
+
             return true;
           }
         },
         child: Scaffold(
+          floatingActionButton: videoSniffer.buildFloatingActionButton(),
           drawer: const MyDrawer(),
           body: SafeArea(
             child: Column(
@@ -159,12 +173,15 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
                             var uri = navigationAction.request.url!;
                             if (uri.scheme == 'intent') {
                               try {
-                                final result = await const MethodChannel('HiChannel') // Replace with your channel name
-                                    .invokeMethod('launchIntent', uri.toString());
+                                final result = await const MethodChannel(
+                                        'HiChannel') // Replace with your channel name
+                                    .invokeMethod(
+                                        'launchIntent', uri.toString());
 
                                 if (result == 'success') {
                                   // Intent launched successfully
-                                  return NavigationActionPolicy.CANCEL; // Prevent the WebView from loading the URL
+                                  return NavigationActionPolicy
+                                      .CANCEL; // Prevent the WebView from loading the URL
                                 } else {
                                   // Handle intent launch failure
                                   print('Error launching intent');
@@ -174,11 +191,6 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
                                 print('Error launching intent: $e');
                               }
                             }
-
-
-
-
-
 
                             if (![
                               "http",
@@ -222,14 +234,24 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
                               urlController.text = this.url;
                             });
                           },
-                          onDownloadStartRequest: (controller, urlRequest) async {
+                          onDownloadStartRequest:
+                              (controller, urlRequest) async {
                             final url = urlRequest.url.toString();
-                            final filename = url.substring(url.lastIndexOf('/') + 1);
+                            final filename =
+                                url.substring(url.lastIndexOf('/') + 1);
                             await downloadFile(url, filename);
                           },
-
+                          onCreateWindow: (controller, createWindowRequest) {
+                            // Handle the creation of the new window as needed
+                            // You can choose to open the new window in the same WebView instance
+                            // or take other actions based on your app's requirements
+                            return Future.value(true);
+                            // Allow the new window
+                          },
                         ),
                       ),
+
+
                       if (progress < 1.0)
                         LinearProgressIndicator(
                           value: progress,
@@ -241,9 +263,6 @@ class _AllAppSearchPageState extends State<AllAppSearchPage> {
               ],
             ),
           ),
-
-
-
         ));
   }
 }

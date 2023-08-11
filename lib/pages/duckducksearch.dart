@@ -3,8 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:nothing_browser/initialpages/drawerpage.dart';
-import 'package:nothing_browser/parts/download_helper.dart';
+import 'package:nothing_browser/parts/drawerpage.dart';
+import 'package:nothing_browser/downloadrelated/download_helper.dart';
+import 'package:nothing_browser/downloadrelated/sniffers.dart';
 import 'package:nothing_browser/websitedetails/websitedata.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:nothing_browser/parts/header.dart';
@@ -23,6 +24,8 @@ class DuckDuckSearchPage extends StatefulWidget {
 class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
   final GlobalKey webViewKey = GlobalKey();
 
+
+
   //InAppWebView Settings//
   InAppWebViewController? webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
@@ -38,6 +41,9 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
     supportZoom: true,
     supportMultipleWindows: true,
     allowFileAccess: true,
+    safeBrowsingEnabled: true,
+    clearCache: true,
+    clearSessionCache: true,
     userAgent:
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
 
@@ -126,17 +132,26 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final videoSniffer = VideoSniffer(
+      webViewController: webViewController,
+      context: context,
+    );
+
     return WillPopScope(
       onWillPop: () async {
         if (await webViewController!.canGoBack()) {
           webViewController!.goBack();
           return false;
         } else {
+          webViewController!.dispose();
           return true;
         }
       },
       child: SafeArea(
         child: Scaffold(
+
+          floatingActionButton: videoSniffer.buildFloatingActionButton(),
+
           drawer: const MyDrawer(),
           body: Column(
             children: [
@@ -208,6 +223,10 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
 
 
 
+
+
+
+
                         if (![
                           "http",
                           "https",
@@ -245,6 +264,10 @@ class _DuckDuckSearchPageState extends State<DuckDuckSearchPage> {
                           urlController.text = this.url;
                         });
                       },
+
+
+
+
                       onReceivedError: (controller, request, error) {
                         pullToRefreshController?.endRefreshing();
                       },

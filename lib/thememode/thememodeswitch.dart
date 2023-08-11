@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nothing_browser/parts/theme_provider.dart';
+import 'package:nothing_browser/thememode/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 
