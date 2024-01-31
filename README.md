@@ -1,6 +1,5 @@
-# nothing_browser
+# Hi xBrowser: Fast & Private
 ![Screenshot](xBrowser.png)
-No History Browser
 
 ## Getting Started
 
