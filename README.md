@@ -1,5 +1,5 @@
 # nothing_browser
-![alt text]([http://url/to/img.png](https://bharat-storage.s3.ap-south-1.amazonaws.com/wp-content/uploads/2024/01/21162931/bharatsavvybannerblue.jpg.png))
+![Screenshot](screenshot.png)
 No History Browser
 
 ## Getting Started
