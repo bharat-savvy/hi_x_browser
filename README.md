@@ -25,6 +25,9 @@ Welcome to Hi X Browser, where privacy meets simplicity. Our browser is designed
 
 10. 🌐 **Support for Private Browsing Modes**: Hi X Browser supports private browsing modes for websites that require it, providing an extra layer of privacy when needed.
 
+![Screenshot](xBrowser.png)
+
+
 **Why Choose Hi X Browser?**
 
 Hi X Browser empowers you to take control of your online privacy without sacrificing speed or convenience. With a commitment to transparency and security, we prioritize your privacy above all else. Join the millions of users who trust Hi X Browser for a private and secure browsing experience.
