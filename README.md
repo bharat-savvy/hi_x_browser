@@ -1,5 +1,5 @@
 # nothing_browser
-![Screenshot](screenshot.png)
+![Screenshot](aol.png)
 No History Browser
 
 ## Getting Started
