@@ -1,5 +1,5 @@
 # Hi xBrowser: Fast & Private
-![Screenshot](xBrowser.png)
+![Screenshot](bharatsavvy.png)
 
 ## Getting Started
 
